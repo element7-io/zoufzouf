@@ -2,11 +2,10 @@ package be.pixxis.zoefzoef.location;
 
 import java.util.concurrent.ExecutionException;
 
-
 /**
  * @author Gert Leenders
  * @version $Id$
- *
+ *          <p>
  *          <p>
  *          http://aws.amazon.com/cloudfront/details/
  *          http://aws.amazon.com/about-aws/globalinfrastructure/#reglink-na
@@ -85,8 +84,8 @@ public enum EdgeLocation {
     private final String pricingRegion;
     private final String edgeLocation;
 
-    private EdgeLocation(final String edgeLocation, final String city, final String country, final String state, final String continent,
-                         final String pricingRegion) throws ExecutionException {
+    private EdgeLocation(final String edgeLocation, final String city, final String country, final String state,
+                         final String continent, final String pricingRegion) throws ExecutionException {
         this.edgeLocation = edgeLocation;
         this.city = city;
         this.country = country;
