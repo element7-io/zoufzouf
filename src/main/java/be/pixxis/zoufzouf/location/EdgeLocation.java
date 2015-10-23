@@ -1,4 +1,4 @@
-package be.pixxis.zoefzoef.location;
+package be.pixxis.zoufzouf.location;
 
 import java.util.concurrent.ExecutionException;
 
@@ -85,7 +85,7 @@ public enum EdgeLocation {
     private final String edgeLocation;
 
     private EdgeLocation(final String edgeLocation, final String city, final String country, final String state,
-                         final String continent, final String pricingRegion) throws ExecutionException {
+                         final String continent, final String pricingRegion) {
         this.edgeLocation = edgeLocation;
         this.city = city;
         this.country = country;
@@ -95,7 +95,7 @@ public enum EdgeLocation {
     }
 
     private EdgeLocation(final String city, final String country, final String state, final String continent,
-                         final String pricingRegion) throws ExecutionException {
+                         final String pricingRegion) {
         this.edgeLocation = null;
         this.city = city;
         this.country = country;
