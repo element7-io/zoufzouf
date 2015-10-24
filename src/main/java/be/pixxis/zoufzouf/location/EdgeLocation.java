@@ -104,7 +104,7 @@ public enum EdgeLocation {
         this.pricingRegion = pricingRegion;
     }
 
-    static String getPricingRegion(final String edgeLocation) throws Exception {
+    public static String getPricingRegion(final String edgeLocation) throws Exception {
         final EdgeLocation[] values = EdgeLocation.values();
         for (EdgeLocation location : values) {
             if (location.toString().equals(edgeLocation)) {
