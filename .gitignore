@@ -1,4 +1,5 @@
 .DS_Store
+*.properties
 gradle/
 .gradle/
 target/

@@ -18,13 +18,14 @@ import java.rmi.server.ExportException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.zip.GZIPInputStream;
 
 /**
  * @author glnd
  * @version $Id$
  */
-public class LogSlurperThread {
+public class LogSlurperThread<Void> implements Callable<Void> {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd");
 
@@ -50,9 +51,8 @@ public class LogSlurperThread {
         return blobStoreHolder.get();
     }
 
-
     @Override
-    public void call() throws Exception {
+    public Void call() throws Exception {
 
         try {
 
@@ -98,6 +98,7 @@ public class LogSlurperThread {
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         }
+        return null;
     }
 
 
@@ -217,7 +218,7 @@ public class LogSlurperThread {
                 // MongoBean.INSTANCE.addMeasurement(MeasurementType.PRESENTATION, date, presentationId, location, bytes, userId)
 
                 // @GuardedBy("putIfAbsent atomic update on cache")
-                String channelId = LogSlurper.localCache.get(presentationId);
+                String channelId = LogSlurper.LOCAL_CACHE.get(presentationId);
                 if (channelId == null) {
 //                    channelId = MongoBean.INSTANCE.findPresentationChannelId(presentationId)
 //                    LogSlurper.localCache.putIfAbsent(presentationId, channelId)
@@ -239,7 +240,7 @@ public class LogSlurperThread {
 //                MongoBean.INSTANCE.addMeasurement(MeasurementType.COURSE, date, courseId, location, bytes, userId)
 
                 // @GuardedBy("putIfAbsent atomic update on cache")
-                String channelId = LogSlurper.localCache.get(courseId);
+                String channelId = LogSlurper.LOCAL_CACHE.get(courseId);
 //                if (channelId == null) {
 //                    channelId = MongoBean.INSTANCE.findCourseChannelId(courseId)
 //                    Analyzer.localCache.putIfAbsent(courseId, channelId)

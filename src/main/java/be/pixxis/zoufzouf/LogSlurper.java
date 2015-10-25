@@ -4,27 +4,30 @@ import net.jcip.annotations.GuardedBy;
 import org.jclouds.ContextBuilder;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
+import org.jclouds.blobstore.KeyNotFoundException;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.StorageMetadata;
 import org.jclouds.blobstore.domain.StorageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-
-import static org.jclouds.blobstore.options.ListContainerOptions.Builder.inDirectory
+import static org.jclouds.blobstore.options.ListContainerOptions.Builder.inDirectory;
 
 /**
- * @author glnd
+ * @author Gert Leenders
  * @version $Id$
  */
 public class LogSlurper {
@@ -37,22 +40,39 @@ public class LogSlurper {
 
     //TODO: Capture unprocessed lines in an error file based on the number of fields (error-17.log, error-18.log,....)
 
-    public static final String BUCKET = "misc.example.com";
-    private final static int NUMBER_OF_THREADS = 8;
+    public static final String BUCKET = "misc.pixxis.be";
+    private static final Logger LOG = LoggerFactory.getLogger(LogSlurper.class);
+    private static final int NUMBER_OF_THREADS = 8;
     private static final int CONCURRENCY_LEVEL = NUMBER_OF_THREADS / 4;
-    public static final ConcurrentHashMap<String, String> localCache = new ConcurrentHashMap<String, String>(16, 0.9f, CONCURRENCY_LEVEL);
-    private final static int NUMBER_OF_FILES_TO_PROCESS = 1000;
-    private static final String ACCESS_KEY = "...";
-    private static final String SECRET_KEY = "xxx";
+    public static final ConcurrentHashMap<String, String> LOCAL_CACHE = new ConcurrentHashMap<String, String>(16, 0.9f, CONCURRENCY_LEVEL);
+    private static final int NUMBER_OF_FILES_TO_PROCESS = 1000;
     private static final String LOGS_FOLDER = "logs/cloudfront";
     private static final String LOGS_PROCESSING_FOLDER = "logs-processing/cloudfront";
-    public static BlobStoreContext blobStoreContext = ContextBuilder.newBuilder("aws-s3").credentials(ACCESS_KEY, SECRET_KEY)
-            .buildView(BlobStoreContext.class);
-    private final Logger LOG = LoggerFactory.getLogger(LogSlurper.class);
-    private long processedLines = 0;
-    private ServerSocket ss;
+    public static BlobStoreContext blobStoreContext;
 
-    static void main(String[] args) {
+    static {
+
+        final String filename = "config.properties";
+        final InputStream resourceAsStream = LogSlurper.class.getClass().getResourceAsStream("/" + filename);
+
+        if (resourceAsStream != null) {
+            final Properties properties = new Properties();
+            try {
+                properties.load(resourceAsStream);
+
+                blobStoreContext = ContextBuilder.newBuilder("aws-s3").credentials(properties.getProperty("AWS_ACCESS_KEY_ID"), properties.getProperty("AWS_SECRET_ACCESS_KEY"))
+                        .buildView(BlobStoreContext.class);
+
+            } catch (IOException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+    }
+
+
+    private long processedLines = 0;
+
+    public static void main(final String[] args) {
         final LogSlurper logSlurper = new LogSlurper();
         logSlurper.avoidConcurrentApplicationRuns();
         logSlurper.analyze();
@@ -69,7 +89,7 @@ public class LogSlurper {
      */
     @GuardedBy("ThreadLocal blobStore")
     public static String moveFile(final BlobStore blobStore, final String sourceKey,
-                                  final String destinationFolder) throws Exception {
+                                  final String destinationFolder) throws KeyNotFoundException {
 
         final Blob blob = blobStore.getBlob(BUCKET, sourceKey);
 
@@ -84,7 +104,7 @@ public class LogSlurper {
 
         } else {
 
-            throw new Exception("Can't move file, " + sourceKey + " Not found.");
+            throw new KeyNotFoundException(sourceKey, BUCKET, "Error while moving file.");
 
         }
 
@@ -97,7 +117,7 @@ public class LogSlurper {
         try {
             LOG.info("-----> New Analyzer Run....");
             LOG.info("Check server socket binding on port 5353.");
-            ss = new ServerSocket();
+            final ServerSocket ss = new ServerSocket();
             ss.bind(new InetSocketAddress(5353));
             LOG.info("No other application instance running. Proceeding...");
         } catch (SocketException se) {
@@ -118,7 +138,7 @@ public class LogSlurper {
 
         try {
 
-            long startTime = System.currentTimeMillis();
+            final long startTime = System.currentTimeMillis();
 
             LOG.info("Version 1.1,build_111");
             LOG.info("Log analyzer started on bucket: {}", BUCKET);
@@ -132,18 +152,17 @@ public class LogSlurper {
             final BlobStore blobStore = blobStoreContext.getBlobStore();
 
             final ExecutorService pool = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
-            final List<LogSlurperThread> tasks = new ArrayList<LogSlurperThread>();
+            final List<LogSlurperThread<Void>> tasks = new ArrayList<>();
 
             int i = 0;
 
             // Cleanup the logs-processing folder if necessary.
-            for (StorageMetadata resourceMd in blobStore.list(BUCKET,
-                    inDirectory(LOGS_PROCESSING_FOLDER).maxResults(1000))){
+            for (StorageMetadata resourceMd : blobStore.list(BUCKET, inDirectory(LOGS_PROCESSING_FOLDER).maxResults(1000))) {
 
                 if (resourceMd.getType() == StorageType.BLOB) {
                     LOG.trace("file: {} added to que for processing.", resourceMd.getName());
-                    tasks.add(new LogSlurperThread(this, resourceMd.getName()));
-                    i++
+                    tasks.add(new LogSlurperThread<>(this, resourceMd.getName()));
+                    i++;
                 }
             }
 
@@ -154,15 +173,20 @@ public class LogSlurper {
             } else {
 
                 // Get the logs form the logs folder
-                for (StorageMetadata resourceMd in blobStore.list(BUCKET,
-                        inDirectory(LOGS_FOLDER).maxResults(NUMBER_OF_FILES_TO_PROCESS))){
+                for (StorageMetadata resourceMd : blobStore.list(BUCKET, inDirectory(LOGS_FOLDER).maxResults(NUMBER_OF_FILES_TO_PROCESS))) {
 
                     if (resourceMd.getType() == StorageType.BLOB) {
 
                         LOG.trace("file: {} added to que for processing.", resourceMd.getName());
-                        def String processingKey = moveFile(blobStore, resourceMd.getName(), LOGS_PROCESSING_FOLDER)
-                        tasks.add(new AnalyzerThread<Void>(this, processingKey));
-                        i++
+
+                        //control via param
+                        //final String processingKey = moveFile(blobStore, resourceMd.getName(), LOGS_PROCESSING_FOLDER);
+                        //tasks.add(new LogSlurperThread<>(this, processingKey));
+
+                        tasks.add(new LogSlurperThread<>(this, resourceMd.getName()));
+
+
+                        i++;
                     }
                 }
                 LOG.info("{} tasks added for processing from {} folder", i, LOGS_FOLDER);
@@ -172,10 +196,10 @@ public class LogSlurper {
             pool.invokeAll(tasks);
             pool.shutdown();
 
-            long endTime = System.currentTimeMillis()
-            long durationTime = endTime - startTime
+            final long endTime = System.currentTimeMillis();
+            final long durationTime = endTime - startTime;
 
-            String duration = String.format("%d min, %d sec",
+            final String duration = String.format("%d min, %d sec",
                     TimeUnit.MILLISECONDS.toMinutes(durationTime),
                     TimeUnit.MILLISECONDS.toSeconds(durationTime) -
                             TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(durationTime))
@@ -196,6 +220,6 @@ public class LogSlurper {
 
     @GuardedBy("Synchronized")
     synchronized void increaseProcessedLines(final long processedLines) {
-        this.processedLines += processedLines
+        this.processedLines += processedLines;
     }
 }
