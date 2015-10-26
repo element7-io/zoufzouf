@@ -130,11 +130,11 @@ public class LogSlurper {
     }
 
     /**
-     * Analyze the logs in the 'cdn.parleys.com' bucket.
+     * Analyze the logs in the 'misc.pixxis.be' bucket.
      * The logs files to analyse are taken form the '/logs' folder and moved to the 'logs/processing' folder before processing.
      * When the log file is processed it is moved from the 'logs/processing' folder to the 'logs/processed' folder.
      */
-    void analyze() {
+    public void analyze() {
 
         try {
 

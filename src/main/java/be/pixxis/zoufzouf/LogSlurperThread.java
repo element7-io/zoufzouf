@@ -47,9 +47,6 @@ public class LogSlurperThread<Void> implements Callable<Void> {
         this.key = key;
     }
 
-    public static BlobStore getBlobStore() {
-        return blobStoreHolder.get();
-    }
 
     @Override
     public Void call() throws Exception {
@@ -60,7 +57,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
 
             // Process the log file from withing the processing folder.
 
-            final Blob blob = getBlobStore().getBlob(LogSlurper.BUCKET, key);
+            final Blob blob = blobStoreHolder.get().getBlob(LogSlurper.BUCKET, key);
             if (blob != null) {
 
                 final InputStream log = blob.getPayload().openStream();
@@ -79,7 +76,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
                     e.printStackTrace();
                 }
 
-                getBlobStore().removeBlob(LogSlurper.BUCKET, key);
+                blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
 
                 analyzer.increaseProcessedLines(processedLines);
 
@@ -89,7 +86,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
                 LOG.info("Processing failed key: '{}' not found.", key);
 
                 try {
-                    getBlobStore().removeBlob(LogSlurper.BUCKET, key);
+                    blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
                 } catch (Exception e) {
                     LOG.error("Error while trying to delete key '{}'.", key);
                 }
