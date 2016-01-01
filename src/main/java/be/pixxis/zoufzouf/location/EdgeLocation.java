@@ -1,92 +1,91 @@
 package be.pixxis.zoufzouf.location;
 
-import java.util.concurrent.ExecutionException;
+import static be.pixxis.zoufzouf.location.City.*;
+import static be.pixxis.zoufzouf.location.Continent.*;
+import static be.pixxis.zoufzouf.location.Country.*;
+import static be.pixxis.zoufzouf.location.PricingRegion.*;
+import static be.pixxis.zoufzouf.location.State.*;
 
 /**
+ * Complete list of CloudFront Edge locations.
+ *
  * @author Gert Leenders
- * @version $Id$
- *          <p>
- *          <p>
- *          http://aws.amazon.com/cloudfront/details/
- *          http://aws.amazon.com/about-aws/globalinfrastructure/#reglink-na
- *          http://aws.amazon.com/cloudfront/pricing/
- *          <p>
- *          http://blog.domenech.org/2013/10/amazon-web-services-cloudfront-edgelocation-codes.html
- *          <p>
- *          http://en.wikipedia.org/wiki/International_Air_Transport_Association_airport_code
  */
 public enum EdgeLocation {
-    AMS1("Amsterdam", "The Netherlands", null, "Europe", "Europe"),
-    AMS50("Amsterdam", "The Netherlands", null, "Europe", "Europe"),
-    ARN1("Stockholm", "Sweden", null, "Europe", "Europe"),
-    ATL50("Atlanta", null, "Georgia", "United States", "United States"),
-    BOM2("Mumbai", "India", null, "Asia", "India"),
-    CDG3("Paris", "France", null, "Europe", "Europe"),
-    CDG50("Paris", "France", null, "Europe", "Europe"),
-    CDG51("Paris", "France", null, "Europe", "Europe"),
-    DFW3("Dallas", null, "Texas", "United States", "United States"),
-    DFW50("Dallas", null, "Texas", "United States", "United States"),
-    DUB2("Dublin", "Ireland", null, "Europe", "Europe"),
-    EWR2("Newark", null, "New Jersey", "United States", "United States"),
-    FRA2("Frankfurt", "Germany", null, "Europe", "Europe"),
-    FRA50("Frankfurt", "Germany", null, "Europe", "Europe"),
-    FRA6("Frankfurt", "Germany", null, "Europe", "Europe"),
-    GRU1("Sau Paulo", "Brazil", null, "South America", "South America"),
-    GIG50("Rio de Janerio", "Brazil", null, "South America", "South America"),
-    HKG1("Hong Kong Island", "Hong Kong", null, "Asia", "Hong Kong and others"),
-    HKG50("Hong Kong Island", "Hong Kong", null, "Asia", "Hong Kong and others"),
-    HKG51("Hong Kong Island", "Hong Kong", null, "Asia", "Hong Kong and others"),
-    IAD12("Ashburn", null, "Virginia", "United States", "United States"),
-    IAD2("Ashburn", null, "Virginia", "United States", "United States"),
-    IAD53("Ashburn", null, "Virginia", "United States", "United States"),
-    ICN50("Seoul", "South Corea", null, "Asia", "Hong Kong and others"),
-    ICN51("Seoul", "South Corea", null, "Asia", "Hong Kong and others"),
-    IND6("South Bend", null, "Indiana", "United States", "United States"),
-    JAX1("Jacksonville", null, "Florida", "United States", "United States"),
-    JFK1("Nueva York", null, "New York", "United States", "United States"),
-    JFK5("Nueva York", null, "New York", "United States", "United States"),
-    JFK6("Nueva York", null, "New York", "United States", "United States"),
-    LAX1("Los Angeles", null, "California", "United States", "United States"),
-    LAX3("Los Angeles", null, "California", "United States", "United States"),
-    LHR3("London", "United Kingdom", null, "Europe", "Europe"),
-    LHR5("London", "United Kingdom", null, "Europe", "Europe"),
-    LHR50("London", "United Kingdom", null, "Europe", "Europe"),
-    MAA3("Chennai", "India", null, "Asia", "India"),
-    MAD50("Madrid", "Spain", null, "Europe", "Europe"),
-    MEL50("Melbourne", null, null, "Australia", "Australia"),
-    MIA3("Miami", null, "Florida", "United States", "United States"),
-    MIA50("Miami", null, "Florida", "United States", "United States"),
-    MNL50("Manila", "Philippines", null, "Asia", "Hong Kong and others"),
-    MRS50("Marseille", "France", null, "Europe", "Europe"),
-    MXP4("Milan", "Italy", null, "Europe", "Europe"),
-    NRT12("Tokyo", "Japan", null, "Asia", "Japan"),
-    NRT52("Tokyo", "Japan", null, "Asia", "Japan"),
-    NRT53("Tokyo", "Japan", null, "Asia", "Japan"),
-    NRT54("Tokyo", "Japan", null, "Asia", "Japan"),
-    SEA4("Seattle", null, "Washington", "United States", "United States"),
-    SEA50("Seattle", null, "Washington", "United States", "United States"),
-    SEA50_ONE_BOX("SEA50-OneBox", "Seattle", null, "Washington", "United States", "United States"),
-    SFO4("San Francisco", null, "California", "United States", "United States"),
-    SFO5("San Francisco", null, "California", "United States", "United States"),
-    SFO9("San Francisco", null, "California", "United States", "United States"),
-    SFO20("San Francisco", null, "California", "United States", "United States"),
-    SIN2(null, "Republic of Singapore", null, "Asia", "Hong Kong and others"),
-    SIN3(null, "Republic of Singapore", null, "Asia", "Hong Kong and others"),
-    STL2("St. Louis", null, "Missouri", "United States", "United States"),
-    SYD1("Sydney", null, null, "Australia", "Australia"),
-    TPE50("Taipei", "Taiwan", null, "Asia", "Hong Kong and others"),
-    WAW50("Warsaw", "Poland", null, "Europe", "Europe");
 
-    private final String city;
-    private final String country;
-    private final String state;
-    private final String continent;
-    private final String pricingRegion;
-    private final String edgeLocation;
 
-    private EdgeLocation(final String edgeLocation, final String city, final String country, final String state,
-                         final String continent, final String pricingRegion) {
-        this.edgeLocation = edgeLocation;
+
+
+    AMS1(AMSTERDAM, THE_NETHERLANDS, null, EUROPE, PR_EUROPE),
+    AMS50(AMSTERDAM, THE_NETHERLANDS, null, EUROPE, PR_EUROPE),
+    ARN1(STOCKHOLM, SWEDEN, null, EUROPE, PR_EUROPE),
+    ATL50(ATLANTA, null, GEORGIA, UNITED_STATES, PR_UNITED_STATES),
+    BOM2(MUMBAI, INDIA, null, ASIA, PR_INDIA),
+    CDG3(PARIS, FRANCE, null, EUROPE, PR_EUROPE),
+    CDG50(PARIS, FRANCE, null, EUROPE, PR_EUROPE),
+    CDG51(PARIS, FRANCE, null, EUROPE, PR_EUROPE),
+    DFW3(DALLAS, null, TEXAS, UNITED_STATES, PR_UNITED_STATES),
+    DFW50(DALLAS, null, TEXAS, UNITED_STATES, PR_UNITED_STATES),
+    DUB2(DUBLIN, IRELAND, null, EUROPE, PR_EUROPE),
+    EWR2(NEWARK, null, NEW_JERSEY, UNITED_STATES, PR_UNITED_STATES),
+    FRA2(FRANKFURT, GERMANY, null, EUROPE, PR_EUROPE),
+    FRA50(FRANKFURT, GERMANY, null, EUROPE, PR_EUROPE),
+    FRA6(FRANKFURT, GERMANY, null, EUROPE, PR_EUROPE),
+    GRU1(SAU_PAULO, BRAZIL, null, SOUTH_AMERICA, PR_SOUTH_AMERICA),
+    GIG50(RIO_DE_JANERIO, BRAZIL, null, SOUTH_AMERICA, PR_SOUTH_AMERICA),
+    HKG1(HONG_KONG_ISLAND, HONG_KONG, null, ASIA, PR_HONG_KONG_EO),
+    HKG50(HONG_KONG_ISLAND, HONG_KONG, null, ASIA, PR_HONG_KONG_EO),
+    HKG51(HONG_KONG_ISLAND, HONG_KONG, null, ASIA, PR_HONG_KONG_EO),
+    IAD12(ASHBURN, null, VIRGINIA, UNITED_STATES, PR_UNITED_STATES),
+    IAD2(ASHBURN, null, VIRGINIA, UNITED_STATES, PR_UNITED_STATES),
+    IAD53(ASHBURN, null, VIRGINIA, UNITED_STATES, PR_UNITED_STATES),
+    ICN50(SEOUL, SOUTH_COREA, null, ASIA, PR_HONG_KONG_EO),
+    ICN51(SEOUL, SOUTH_COREA, null, ASIA, PR_HONG_KONG_EO),
+    IND6(SOUTH_BEND, null, INDIANA, UNITED_STATES, PR_UNITED_STATES),
+    JAX1(JACKSONVILLE, null, FLORIDA, UNITED_STATES, PR_UNITED_STATES),
+    JFK1(NUEVA_YORK, null, NEW_YORK, UNITED_STATES, PR_UNITED_STATES),
+    JFK5(NUEVA_YORK, null, NEW_YORK, UNITED_STATES, PR_UNITED_STATES),
+    JFK6(NUEVA_YORK, null, NEW_YORK, UNITED_STATES, PR_UNITED_STATES),
+    LAX1(LOS_ANGELES, null, CALIFORNIA, UNITED_STATES, PR_UNITED_STATES),
+    LAX3(LOS_ANGELES, null, CALIFORNIA, UNITED_STATES, PR_UNITED_STATES),
+    LHR3(LONDON, UNITED_KINGDOM, null, EUROPE, PR_EUROPE),
+    LHR5(LONDON, UNITED_KINGDOM, null, EUROPE, PR_EUROPE),
+    LHR50(LONDON, UNITED_KINGDOM, null, EUROPE, PR_EUROPE),
+    MAA3(CHENNAI, INDIA, null, ASIA, PR_INDIA),
+    MAD50(MADRID, SPAIN, null, EUROPE, PR_EUROPE),
+    MEL50(MELBOURNE, null, null, AUSTRALIA, PR_AUSTRALIA),
+    MIA3(MIAMI, null, FLORIDA, UNITED_STATES, PR_UNITED_STATES),
+    MIA50(MIAMI, null, FLORIDA, UNITED_STATES, PR_UNITED_STATES),
+    MNL50(MANILA, PHILIPPINES, null, ASIA, PR_HONG_KONG_EO),
+    MRS50(MARSEILLE, FRANCE, null, EUROPE, PR_EUROPE),
+    MXP4(MILAN, ITALY, null, EUROPE, PR_EUROPE),
+    NRT12(TOKYO, JAPAN, null, ASIA, PR_JAPAN),
+    NRT52(TOKYO, JAPAN, null, ASIA, PR_JAPAN),
+    NRT53(TOKYO, JAPAN, null, ASIA, PR_JAPAN),
+    NRT54(TOKYO, JAPAN, null, ASIA, PR_JAPAN),
+    SEA4(SEATTLE, null, WASHINGTON, UNITED_STATES, PR_UNITED_STATES),
+    SEA50(SEATTLE, null, WASHINGTON, UNITED_STATES, PR_UNITED_STATES),
+    SEA50_ONE_BOX(SEATTLE_ONE_BOX, null, WASHINGTON, UNITED_STATES, PR_UNITED_STATES),
+    SFO4(SAN_FRANCISCO, null, CALIFORNIA, UNITED_STATES, PR_UNITED_STATES),
+    SFO5(SAN_FRANCISCO, null, CALIFORNIA, UNITED_STATES, PR_UNITED_STATES),
+    SFO9(SAN_FRANCISCO, null, CALIFORNIA, UNITED_STATES, PR_UNITED_STATES),
+    SFO20(SAN_FRANCISCO, null, CALIFORNIA, UNITED_STATES, PR_UNITED_STATES),
+    SIN2(null, REPUBLIC_OF_SIGNAPORE, null, ASIA, PR_HONG_KONG_EO),
+    SIN3(null, REPUBLIC_OF_SIGNAPORE, null, ASIA, PR_HONG_KONG_EO),
+    STL2(ST_LOUIS, null, MISSOURI, UNITED_STATES, PR_UNITED_STATES),
+    SYD1(SYDNEY, null, null, AUSTRALIA, PR_AUSTRALIA),
+    TPE50(TAIPEI, TAIWAN, null, ASIA, PR_HONG_KONG_EO),
+    WAW50(WARSAW, POLAND, null, EUROPE, PR_EUROPE);
+
+    private final City city;
+    private final Country country;
+    private final State state;
+    private final Continent continent;
+    private final PricingRegion pricingRegion;
+
+    EdgeLocation(final City city, final Country country, final State state, final Continent continent,
+                 final PricingRegion pricingRegion) {
+
         this.city = city;
         this.country = country;
         this.state = state;
@@ -94,31 +93,21 @@ public enum EdgeLocation {
         this.pricingRegion = pricingRegion;
     }
 
-    private EdgeLocation(final String city, final String country, final String state, final String continent,
-                         final String pricingRegion) {
-        this.edgeLocation = null;
-        this.city = city;
-        this.country = country;
-        this.state = state;
-        this.continent = continent;
-        this.pricingRegion = pricingRegion;
-    }
+    public static PricingRegion getPricingRegion(final String edgeLocation) throws PricingRegionNotFound {
 
-    public static String getPricingRegion(final String edgeLocation) throws Exception {
         final EdgeLocation[] values = EdgeLocation.values();
         for (EdgeLocation location : values) {
-            if (location.toString().equals(edgeLocation)) {
+            if (location.name().equals(edgeLocation)) {
                 return location.pricingRegion;
             }
         }
-        throw new Exception("Price region could be found for location: ${edgeLocation}");
+        throw new PricingRegionNotFound("Price region could be found for location: " + edgeLocation);
     }
 
     @Override
     public String toString() {
-        if (edgeLocation != null) {
-            return edgeLocation;
-        }
-        return super.toString();
+        String value = this.name() + " | " + this.city + " | " + (this.country == null ? "-" : this.country) + " | " +
+                (this.state == null ? "-" : this.state) + " | " + this.continent + " | " + this.pricingRegion;
+        return value;
     }
 }

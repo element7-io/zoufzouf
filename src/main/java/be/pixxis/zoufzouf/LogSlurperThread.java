@@ -1,6 +1,7 @@
 package be.pixxis.zoufzouf;
 
 import be.pixxis.zoufzouf.location.EdgeLocation;
+import be.pixxis.zoufzouf.location.PricingRegionNotFound;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import org.jclouds.blobstore.BlobStore;
@@ -194,7 +195,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
         try {
 
             final Date date = FORMATTER.parseDateTime(dateString).toDate();
-            final String location = EdgeLocation.getPricingRegion(edgeLocation);
+            final String location = EdgeLocation.getPricingRegion(edgeLocation).toString();
 
             if (userId != null) {
                 // Add a user measurement to MongoDB
@@ -299,6 +300,8 @@ public class LogSlurperThread<Void> implements Callable<Void> {
 
         } catch (Exception e) {
             LOG.error(e.getMessage());
+        } catch (PricingRegionNotFound pricingRegionNotFound) {
+            pricingRegionNotFound.printStackTrace();
         }
 
         processedLines++;
