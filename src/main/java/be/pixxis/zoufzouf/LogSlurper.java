@@ -24,15 +24,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.jclouds.blobstore.options.ListContainerOptions.Builder.inDirectory;
+import static org.jclouds.blobstore.options.ListContainerOptions.Builder.*;
 
 /**
  * @author Gert Leenders
  * @version $Id$
  */
 public class LogSlurper {
-    //TODO: monthly job (2de of the month), price calculation for last month
-    //TODO: Daily job, clean days older then 30 days, look for threshold exceeds
     //TODO: make pricing collection from http://aws.amazon.com/cloudfront/pricing/
 
     //TODO: re-enable mailing
@@ -40,40 +38,27 @@ public class LogSlurper {
 
     //TODO: Capture unprocessed lines in an error file based on the number of fields (error-17.log, error-18.log,....)
 
-    public static final String BUCKET = "misc.pixxis.be";
+    static final String BUCKET = "cf.pixxis.be";
     private static final Logger LOG = LoggerFactory.getLogger(LogSlurper.class);
     private static final int NUMBER_OF_THREADS = 8;
     private static final int CONCURRENCY_LEVEL = NUMBER_OF_THREADS / 4;
-    public static final ConcurrentHashMap<String, String> LOCAL_CACHE = new ConcurrentHashMap<String, String>(16, 0.9f, CONCURRENCY_LEVEL);
+    static final ConcurrentHashMap<String, String> LOCAL_CACHE =
+        new ConcurrentHashMap<String, String>(16, 0.9f, CONCURRENCY_LEVEL);
     private static final int NUMBER_OF_FILES_TO_PROCESS = 1000;
     private static final String LOGS_FOLDER = "logs/cloudfront";
     private static final String LOGS_PROCESSING_FOLDER = "logs-processing/cloudfront";
-    public static BlobStoreContext blobStoreContext;
+    static BlobStoreContext blobStoreContext;
 
-    static {
-
-        final String filename = "config.properties";
-        final InputStream resourceAsStream = LogSlurper.class.getClass().getResourceAsStream("/" + filename);
-
-        if (resourceAsStream != null) {
-            final Properties properties = new Properties();
-            try {
-                properties.load(resourceAsStream);
-
-                blobStoreContext = ContextBuilder.newBuilder("aws-s3").credentials(properties.getProperty("AWS_ACCESS_KEY_ID"), properties.getProperty("AWS_SECRET_ACCESS_KEY"))
-                        .buildView(BlobStoreContext.class);
-
-            } catch (IOException e) {
-                LOG.error(e.getMessage());
-            }
-        }
+    public boolean isDryRun() {
+        return dryRun;
     }
 
-
+    private boolean dryRun = false;
     private long processedLines = 0;
 
     public static void main(final String[] args) {
         final LogSlurper logSlurper = new LogSlurper();
+        logSlurper.init();
         logSlurper.avoidConcurrentApplicationRuns();
         logSlurper.analyze();
     }
@@ -110,6 +95,30 @@ public class LogSlurper {
 
     }
 
+    private void init() {
+
+        final String filename = "config.properties";
+        final InputStream resourceAsStream = LogSlurper.class.getClass().getResourceAsStream("/" + filename);
+
+        if (resourceAsStream != null) {
+            final Properties properties = new Properties();
+            try {
+                properties.load(resourceAsStream);
+
+                if (Boolean.valueOf(properties.getProperty("dry_run"))) {
+                    dryRun = true;
+                }
+
+                blobStoreContext = ContextBuilder.newBuilder("aws-s3").credentials(properties.getProperty
+                    ("AWS_ACCESS_KEY_ID"), properties.getProperty("AWS_SECRET_ACCESS_KEY"))
+                    .buildView(BlobStoreContext.class);
+
+            } catch (IOException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+    }
+
     /**
      * Prevent to have multiple analyzers running at the same time.
      */
@@ -131,7 +140,8 @@ public class LogSlurper {
 
     /**
      * Analyze the logs in the 'misc.pixxis.be' bucket.
-     * The logs files to analyse are taken form the '/logs' folder and moved to the 'logs/processing' folder before processing.
+     * The logs files to analyse are taken form the '/logs' folder and moved to the 'logs/processing' folder before
+     * processing.
      * When the log file is processed it is moved from the 'logs/processing' folder to the 'logs/processed' folder.
      */
     public void analyze() {
@@ -157,7 +167,8 @@ public class LogSlurper {
             int i = 0;
 
             // Cleanup the logs-processing folder if necessary.
-            for (StorageMetadata resourceMd : blobStore.list(BUCKET, inDirectory(LOGS_PROCESSING_FOLDER).maxResults(1000))) {
+            for (StorageMetadata resourceMd : blobStore.list(BUCKET, inDirectory(LOGS_PROCESSING_FOLDER).maxResults
+                (1000))) {
 
                 if (resourceMd.getType() == StorageType.BLOB) {
                     LOG.trace("file: {} added to que for processing.", resourceMd.getName());
@@ -173,19 +184,20 @@ public class LogSlurper {
             } else {
 
                 // Get the logs form the logs folder
-                for (StorageMetadata resourceMd : blobStore.list(BUCKET, inDirectory(LOGS_FOLDER).maxResults(NUMBER_OF_FILES_TO_PROCESS))) {
+                for (StorageMetadata resourceMd : blobStore.list(BUCKET, inDirectory(LOGS_FOLDER).maxResults
+                    (NUMBER_OF_FILES_TO_PROCESS))) {
 
                     if (resourceMd.getType() == StorageType.BLOB) {
 
                         LOG.trace("file: {} added to que for processing.", resourceMd.getName());
 
-                        //control via param
-                        //final String processingKey = moveFile(blobStore, resourceMd.getName(), LOGS_PROCESSING_FOLDER);
-                        //tasks.add(new LogSlurperThread<>(this, processingKey));
-
-                        tasks.add(new LogSlurperThread<>(this, resourceMd.getName()));
-
-
+                        if (this.dryRun) {
+                            tasks.add(new LogSlurperThread<>(this, resourceMd.getName()));
+                        } else {
+                            final String processingKey = moveFile(blobStore, resourceMd.getName(),
+                                LOGS_PROCESSING_FOLDER);
+                            tasks.add(new LogSlurperThread<>(this, processingKey));
+                        }
                         i++;
                     }
                 }
@@ -200,9 +212,9 @@ public class LogSlurper {
             final long durationTime = endTime - startTime;
 
             final String duration = String.format("%d min, %d sec",
-                    TimeUnit.MILLISECONDS.toMinutes(durationTime),
-                    TimeUnit.MILLISECONDS.toSeconds(durationTime) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(durationTime))
+                TimeUnit.MILLISECONDS.toMinutes(durationTime),
+                TimeUnit.MILLISECONDS.toSeconds(durationTime) -
+                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(durationTime))
             );
 
             LOG.info("{} lines processed", processedLines);

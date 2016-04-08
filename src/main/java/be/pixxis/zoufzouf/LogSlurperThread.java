@@ -77,7 +77,9 @@ public class LogSlurperThread<Void> implements Callable<Void> {
                     e.printStackTrace();
                 }
 
-                blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
+                if (!this.analyzer.isDryRun()) {
+                    blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
+                }
 
                 analyzer.increaseProcessedLines(processedLines);
 
@@ -87,7 +89,9 @@ public class LogSlurperThread<Void> implements Callable<Void> {
                 LOG.info("Processing failed key: '{}' not found.", key);
 
                 try {
-                    blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
+                    if (!this.analyzer.isDryRun()) {
+                        blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
+                    }
                 } catch (Exception e) {
                     LOG.error("Error while trying to delete key '{}'.", key);
                 }
@@ -129,15 +133,15 @@ public class LogSlurperThread<Void> implements Callable<Void> {
             logMsg.put("x-edge-result-type", rawLogData[13]);
 
             if (logMsg.get("cs-method").equals("GET") && logMsg.get("sc-status") != null &&
-                    logMsg.get("sc-status").startsWith("20")) {
+                logMsg.get("sc-status").startsWith("20")) {
 
                 processLogLine(logMsg.get("cs-uri-stem"), logMsg.get("cs-uri-query"), logMsg.get("date"),
-                        logMsg.get("x-edge-location"), Long.valueOf(logMsg.get("sc-bytes")));
+                    logMsg.get("x-edge-location"), Long.valueOf(logMsg.get("sc-bytes")));
 
             } else if (logMsg.get("sc-status").equals("000")) {
                 // Ignore: connection closed before request was complete.
             } else if (logMsg.get("x-edge-result-type").equalsIgnoreCase("error")) {
-                LOG.warn(line);
+                // Silently ignore?
             } else {
                 LOG.trace(line);
             }
@@ -155,10 +159,10 @@ public class LogSlurperThread<Void> implements Callable<Void> {
             logMsg.put("x-sname-query", rawLogData[14]);
 
             if (logMsg.get("x-cf-status").equals("OK") && (logMsg.get("x-event").equals("play") ||
-                    logMsg.get("x-event").equals("pause") || logMsg.get("x-event").equals("stop"))) {
+                logMsg.get("x-event").equals("pause") || logMsg.get("x-event").equals("stop"))) {
 
                 processLogLine(logMsg.get("x-sname"), logMsg.get("x-sname-query"), logMsg.get("date"),
-                        logMsg.get("x-edge-location"), Long.valueOf(logMsg.get("sc-bytes")));
+                    logMsg.get("x-edge-location"), Long.valueOf(logMsg.get("sc-bytes")));
 
             } else {
                 LOG.trace(line);
@@ -213,7 +217,9 @@ public class LogSlurperThread<Void> implements Callable<Void> {
                 }
 
                 // Add a presentation measurement to MongoDB
-                // MongoBean.INSTANCE.addMeasurement(MeasurementType.PRESENTATION, date, presentationId, location, bytes, userId)
+                // MongoBean.INSTANCE.addMeasurement(MeasurementType.PRESENTATION, date, presentationId, location,
+              // bytes,
+                // userId)
 
                 // @GuardedBy("putIfAbsent atomic update on cache")
                 String channelId = LogSlurper.LOCAL_CACHE.get(presentationId);
@@ -257,7 +263,8 @@ public class LogSlurperThread<Void> implements Callable<Void> {
                 }
 
                 // Add a document measurement to MongoDB
-                //  MongoBean.INSTANCE.addMeasurement(MeasurementType.DOCUMENT, date, documentId, location, bytes, userId)
+                //  MongoBean.INSTANCE.addMeasurement(MeasurementType.DOCUMENT, date, documentId, location, bytes,
+              // userId)
 
                 // @GuardedBy("putIfAbsent atomic update on cache")
 //                String channelId = Analyzer.localCache.get(documentId);
@@ -317,25 +324,25 @@ public class LogSlurperThread<Void> implements Callable<Void> {
     private boolean checkUriStemExtension(final String uriStem) {
 
         if (uriStem.endsWith("mp4") || uriStem.endsWith("MP4") ||
-                uriStem.endsWith("mp3") || uriStem.endsWith("MP3") ||
-                uriStem.endsWith("flv") || uriStem.endsWith("FLV") ||
-                uriStem.endsWith("ogg") || uriStem.endsWith("OGG") ||
-                uriStem.endsWith("swf") || uriStem.endsWith("SWF") ||
-                uriStem.endsWith("mov") || uriStem.endsWith("MOV") ||
-                uriStem.endsWith("png") || uriStem.endsWith("PNG") ||
-                uriStem.endsWith("jpg") || uriStem.endsWith("JPG") ||
-                uriStem.endsWith("gif") || uriStem.endsWith("GIF") ||
-                uriStem.endsWith("pdf") || uriStem.endsWith("PDF") ||
-                uriStem.endsWith("pptx") || uriStem.endsWith("PPTX") ||
-                uriStem.endsWith("svg") || uriStem.endsWith("SVG") ||
-                uriStem.endsWith("key") || uriStem.endsWith("KEY") ||
-                uriStem.endsWith("zip") || uriStem.endsWith("ZIP") ||
-                uriStem.endsWith("docx") || uriStem.endsWith("DOCX") ||
-                uriStem.endsWith("txt") || uriStem.endsWith("TXT") ||
-                uriStem.endsWith("eps") || uriStem.endsWith("EPS") ||
-                uriStem.endsWith("psd") || uriStem.endsWith("PSD") ||
-                uriStem.endsWith("m4v") || uriStem.endsWith("M4V") ||
-                uriStem.endsWith("jpeg") || uriStem.endsWith("JPEG")) {
+            uriStem.endsWith("mp3") || uriStem.endsWith("MP3") ||
+            uriStem.endsWith("flv") || uriStem.endsWith("FLV") ||
+            uriStem.endsWith("ogg") || uriStem.endsWith("OGG") ||
+            uriStem.endsWith("swf") || uriStem.endsWith("SWF") ||
+            uriStem.endsWith("mov") || uriStem.endsWith("MOV") ||
+            uriStem.endsWith("png") || uriStem.endsWith("PNG") ||
+            uriStem.endsWith("jpg") || uriStem.endsWith("JPG") ||
+            uriStem.endsWith("gif") || uriStem.endsWith("GIF") ||
+            uriStem.endsWith("pdf") || uriStem.endsWith("PDF") ||
+            uriStem.endsWith("pptx") || uriStem.endsWith("PPTX") ||
+            uriStem.endsWith("svg") || uriStem.endsWith("SVG") ||
+            uriStem.endsWith("key") || uriStem.endsWith("KEY") ||
+            uriStem.endsWith("zip") || uriStem.endsWith("ZIP") ||
+            uriStem.endsWith("docx") || uriStem.endsWith("DOCX") ||
+            uriStem.endsWith("txt") || uriStem.endsWith("TXT") ||
+            uriStem.endsWith("eps") || uriStem.endsWith("EPS") ||
+            uriStem.endsWith("psd") || uriStem.endsWith("PSD") ||
+            uriStem.endsWith("m4v") || uriStem.endsWith("M4V") ||
+            uriStem.endsWith("jpeg") || uriStem.endsWith("JPEG")) {
 
             return true;
 
