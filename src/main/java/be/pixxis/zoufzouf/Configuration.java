@@ -6,6 +6,8 @@ import java.util.List;
 
 /**
  * @author Gert Leenders
+ *
+ * Configuration reflecting yaml configuration
  */
 public class Configuration {
     private String awsAccessKey;
@@ -29,7 +31,6 @@ public class Configuration {
     public void setServers(final List<String> servers) {
         this.servers = servers;
     }
-
 
     public String getAwsSecretKey() {
         return awsSecretKey;
