@@ -1,5 +1,6 @@
 package be.pixxis.zoufzouf;
 
+import be.pixxis.zoufzouf.persistence.MongoBean;
 import net.jcip.annotations.GuardedBy;
 import org.jclouds.ContextBuilder;
 import org.jclouds.blobstore.BlobStore;
@@ -10,15 +11,14 @@ import org.jclouds.blobstore.domain.StorageMetadata;
 import org.jclouds.blobstore.domain.StorageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,11 +49,11 @@ public class LogSlurper {
     private static final String LOGS_PROCESSING_FOLDER = "logs-processing/cloudfront";
     static BlobStoreContext blobStoreContext;
 
-    public boolean isDryRun() {
-        return dryRun;
+    public Configuration getConfig() {
+        return config;
     }
 
-    private boolean dryRun = false;
+    private Configuration config;
     private long processedLines = 0;
 
     public static void main(final String[] args) {
@@ -97,25 +97,15 @@ public class LogSlurper {
 
     private void init() {
 
-        final String filename = "config.properties";
-        final InputStream resourceAsStream = LogSlurper.class.getClass().getResourceAsStream("/" + filename);
+        final InputStream yamlStream = LogSlurper.class.getClass().getResourceAsStream("/properties.yml");
 
-        if (resourceAsStream != null) {
-            final Properties properties = new Properties();
-            try {
-                properties.load(resourceAsStream);
+        if (yamlStream != null) {
 
-                if (Boolean.valueOf(properties.getProperty("dry_run"))) {
-                    dryRun = true;
-                }
+            final Yaml yaml = new Yaml();
+            config = yaml.loadAs(yamlStream, Configuration.class);
 
-                blobStoreContext = ContextBuilder.newBuilder("aws-s3").credentials(properties.getProperty
-                    ("AWS_ACCESS_KEY_ID"), properties.getProperty("AWS_SECRET_ACCESS_KEY"))
-                    .buildView(BlobStoreContext.class);
-
-            } catch (IOException e) {
-                LOG.error(e.getMessage());
-            }
+            blobStoreContext = ContextBuilder.newBuilder("aws-s3").credentials(config.getAwsAccessKey(),
+                config.getAwsSecretKey()) .buildView(BlobStoreContext.class);
         }
     }
 
@@ -155,8 +145,8 @@ public class LogSlurper {
             LOG.info("Threads: {}, Concurrency level: {}", NUMBER_OF_THREADS, CONCURRENCY_LEVEL);
             LOG.info("Batch size: {}", NUMBER_OF_FILES_TO_PROCESS);
 
-            // Create a new MongoDB connection.
-//            MongoBean.INSTANCE.init()
+            // Create a new MongoDB connection
+            MongoBean.INSTANCE.init(config.getServers());
 
             // Create Container
             final BlobStore blobStore = blobStoreContext.getBlobStore();
@@ -191,7 +181,7 @@ public class LogSlurper {
 
                         LOG.trace("file: {} added to que for processing.", resourceMd.getName());
 
-                        if (this.dryRun) {
+                        if (this.config.isDryRun()) {
                             tasks.add(new LogSlurperThread<>(this, resourceMd.getName()));
                         } else {
                             final String processingKey = moveFile(blobStore, resourceMd.getName(),
@@ -225,7 +215,7 @@ public class LogSlurper {
         } finally {
             // Close connection
             blobStoreContext.close();
-            //MongoBean.INSTANCE.shutdown()
+            MongoBean.INSTANCE.shutdown();
             System.exit(0);
         }
     }

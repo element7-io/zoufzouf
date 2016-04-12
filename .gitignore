@@ -14,4 +14,4 @@ build/
 .settings
 out/
 *.class
-*.groovy
+*.yml

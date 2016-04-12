@@ -2,6 +2,8 @@ package be.pixxis.zoufzouf;
 
 import be.pixxis.zoufzouf.location.EdgeLocation;
 import be.pixxis.zoufzouf.location.PricingRegionNotFound;
+import be.pixxis.zoufzouf.model.types.MeasurementType;
+import be.pixxis.zoufzouf.persistence.MongoBean;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import org.jclouds.blobstore.BlobStore;
@@ -50,6 +52,9 @@ public class LogSlurperThread<Void> implements Callable<Void> {
 
 
     @Override
+    /**
+     * Process the individual log files, one by one in parallel threads
+     */
     public Void call() throws Exception {
 
         try {
@@ -77,7 +82,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
                     e.printStackTrace();
                 }
 
-                if (!this.analyzer.isDryRun()) {
+                if (!this.analyzer.getConfig().isDryRun()) {
                     blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
                 }
 
@@ -89,7 +94,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
                 LOG.info("Processing failed key: '{}' not found.", key);
 
                 try {
-                    if (!this.analyzer.isDryRun()) {
+                    if (!this.analyzer.getConfig().isDryRun()) {
                         blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
                     }
                 } catch (Exception e) {
@@ -203,7 +208,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
 
             if (userId != null) {
                 // Add a user measurement to MongoDB
-                // MongoBean.INSTANCE.addMeasurement(MeasurementType.USER, date, userId, location, bytes, userId)
+                 MongoBean.INSTANCE.addMeasurement(MeasurementType.USER, date, userId, location, bytes, userId);
             }
 
             // Presentation log line
