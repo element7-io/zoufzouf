@@ -156,7 +156,7 @@ public class LogSlurper {
             LOG.info("Batch size: {}", NUMBER_OF_FILES_TO_PROCESS);
 
             // Create a new MongoDB connection.
-            //MongoBean.INSTANCE.init()
+//            MongoBean.INSTANCE.init()
 
             // Create Container
             final BlobStore blobStore = blobStoreContext.getBlobStore();
