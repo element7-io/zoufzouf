@@ -3,6 +3,9 @@
 Log Analysis for Amazon CloudFront
 
 ## Technology stack
+- Java 8
+- Persistence layer options
+	- MongoDB
 
 ## Usage
 
