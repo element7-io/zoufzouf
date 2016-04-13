@@ -4,7 +4,6 @@ apply plugin: 'application'
 
 group = 'be.pixxis'
 version = '1.0'
-manifest.mainAttributes('Main-Class' : 'be.pixxis.zoufzouf.LogSlurper')
 mainClassName = 'be.pixxis.zoufzouf.LogSlurper'
 sourceCompatibility = 1.8
 version = '0.1.0'
@@ -12,7 +11,8 @@ version = '0.1.0'
 jar {
     manifest {
         attributes 'Implementation-Title': 'ZoufZouf, a multithreaded CloudFront log analyzer',
-                'Implementation-Version': version
+                'Implementation-Version': version,
+                'Main-Class' : 'be.pixxis.zoufzouf.LogSlurper'
     }
 }
 
