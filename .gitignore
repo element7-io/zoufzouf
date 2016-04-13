@@ -15,3 +15,4 @@ build/
 out/
 *.class
 *.yml
+!.travis.yml
