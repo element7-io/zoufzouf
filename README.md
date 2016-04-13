@@ -1,8 +1,8 @@
 
-CI      |  Status
---------|-------
-Snap-CI | [![Build Status](https://snap-ci.com/glnds/zoufzouf/branch/master/build_image)](https://snap-ci.com/glnds/zoufzouf/branch/master)
-
+CI        |  Status
+----------|-------
+Snap CI   | [![Build Status](https://snap-ci.com/glnds/zoufzouf/branch/master/build_image)](https://snap-ci.com/glnds/zoufzouf/branch/master)
+Travis CI | [![Build Status](https://travis-ci.org/glnds/zoufzouf.svg?branch=master)](https://travis-ci.org/glnds/zoufzouf)
 
 
 # ZoufZouf
