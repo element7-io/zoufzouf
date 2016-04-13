@@ -4,6 +4,7 @@ import be.pixxis.zoufzouf.location.EdgeLocation;
 import be.pixxis.zoufzouf.location.PricingRegionNotFound;
 import be.pixxis.zoufzouf.model.types.MeasurementType;
 import be.pixxis.zoufzouf.persistence.MongoBean;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import org.jclouds.blobstore.BlobStore;
@@ -42,11 +43,11 @@ public class LogSlurperThread<Void> implements Callable<Void> {
     private final Logger LOG = LoggerFactory.getLogger(LogSlurperThread.class);
 
     private long processedLines = 0;
-    private LogSlurper analyzer;
+    private LogSlurper slurper;
     private String key;
 
-    public LogSlurperThread(final LogSlurper analyzer, final String key) {
-        this.analyzer = analyzer;
+    public LogSlurperThread(final LogSlurper slurper, final String key) {
+        this.slurper = slurper;
         this.key = key;
     }
 
@@ -82,11 +83,11 @@ public class LogSlurperThread<Void> implements Callable<Void> {
                     e.printStackTrace();
                 }
 
-                if (!this.analyzer.getConfig().isDryRun()) {
+                if (!this.slurper.getConfig().isDryRun()) {
                     blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
                 }
 
-                analyzer.increaseProcessedLines(processedLines);
+                slurper.increaseProcessedLines(processedLines);
 
                 LOG.trace(" >> processed {}", key);
 
@@ -94,7 +95,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
                 LOG.info("Processing failed key: '{}' not found.", key);
 
                 try {
-                    if (!this.analyzer.getConfig().isDryRun()) {
+                    if (!this.slurper.getConfig().isDryRun()) {
                         blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
                     }
                 } catch (Exception e) {
@@ -208,7 +209,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
 
             if (userId != null) {
                 // Add a user measurement to MongoDB
-                 MongoBean.INSTANCE.addMeasurement(MeasurementType.USER, date, userId, location, bytes, userId);
+                MongoBean.INSTANCE.addMeasurement(MeasurementType.USER, date, userId, location, bytes, userId);
             }
 
             // Presentation log line
@@ -223,7 +224,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
 
                 // Add a presentation measurement to MongoDB
                 // MongoBean.INSTANCE.addMeasurement(MeasurementType.PRESENTATION, date, presentationId, location,
-              // bytes,
+                // bytes,
                 // userId)
 
                 // @GuardedBy("putIfAbsent atomic update on cache")
@@ -269,7 +270,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
 
                 // Add a document measurement to MongoDB
                 //  MongoBean.INSTANCE.addMeasurement(MeasurementType.DOCUMENT, date, documentId, location, bytes,
-              // userId)
+                // userId)
 
                 // @GuardedBy("putIfAbsent atomic update on cache")
 //                String channelId = Analyzer.localCache.get(documentId);
@@ -326,7 +327,8 @@ public class LogSlurperThread<Void> implements Callable<Void> {
      * @param uriStem the uri stem
      * @return true if processing is needed
      */
-    private boolean checkUriStemExtension(final String uriStem) {
+    @VisibleForTesting
+    boolean checkUriStemExtension(final String uriStem) {
 
         if (uriStem.endsWith("mp4") || uriStem.endsWith("MP4") ||
             uriStem.endsWith("mp3") || uriStem.endsWith("MP3") ||
@@ -353,7 +355,7 @@ public class LogSlurperThread<Void> implements Callable<Void> {
 
         } else if (uriStem.indexOf(".") == -1) {
 
-            // Not extension, process file.
+            // Not an extension, process file.
             return true;
 
         } else if (uriStem.endsWith("xml")) {
