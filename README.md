@@ -1,6 +1,14 @@
+
+CI      |  Status
+--------|-------
+Snap-CI | [![Build Status](https://snap-ci.com/glnds/zoufzouf/branch/master/build_image)](https://snap-ci.com/glnds/zoufzouf/branch/master)
+
+
+
 # ZoufZouf
 
 Log Analysis for Amazon CloudFront
+
 
 ## Technology stack
 - Java 8
