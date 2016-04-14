@@ -19,6 +19,7 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,11 +49,6 @@ public class LogSlurper {
     private static final String LOGS_FOLDER = "logs/cloudfront";
     private static final String LOGS_PROCESSING_FOLDER = "logs-processing/cloudfront";
     static BlobStoreContext blobStoreContext;
-
-    public Configuration getConfig() {
-        return config;
-    }
-
     private Configuration config;
     private long processedLines = 0;
 
@@ -95,6 +91,10 @@ public class LogSlurper {
 
     }
 
+    public Configuration getConfig() {
+        return config;
+    }
+
     private void init() {
 
         final InputStream yamlStream = LogSlurper.class.getClass().getResourceAsStream("/properties.yml");
@@ -103,9 +103,18 @@ public class LogSlurper {
 
             final Yaml yaml = new Yaml();
             config = yaml.loadAs(yamlStream, Configuration.class);
+            LOG.info("Yaml configuration file initialized.");
+
+            // Use Docker container links if environment variables exists
+            final Map<String, String> env = System.getenv();
+           final String mongoLink =  env.get("MONGO_PORT_27017_TCP");
+            if (mongoLink != null) {
+                config.setFromEnv(mongoLink);
+                LOG.info("Using Docker mongo Link");
+            }
 
             blobStoreContext = ContextBuilder.newBuilder("aws-s3").credentials(config.getAwsAccessKey(),
-                config.getAwsSecretKey()) .buildView(BlobStoreContext.class);
+                config.getAwsSecretKey()).buildView(BlobStoreContext.class);
         }
     }
 
@@ -146,7 +155,7 @@ public class LogSlurper {
             LOG.info("Batch size: {}", NUMBER_OF_FILES_TO_PROCESS);
 
             // Create a new MongoDB connection
-            MongoBean.INSTANCE.init(config.getServers());
+            MongoBean.INSTANCE.init(config.getServerAddresses());
 
             // Create Container
             final BlobStore blobStore = blobStoreContext.getBlobStore();

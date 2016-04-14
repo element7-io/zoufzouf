@@ -1,5 +1,6 @@
 package be.pixxis.zoufzouf.persistence;
 
+import be.pixxis.zoufzouf.Configuration;
 import be.pixxis.zoufzouf.model.types.MeasurementType;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -44,7 +45,13 @@ public enum MongoBean {
      *
      * @throws Exception
      */
-    public void init(final List<String> servers) throws Exception {
+    public void init(final List<Configuration.ServerAddress> servers) throws Exception {
+
+        final List<ServerAddress> addresses = new ArrayList<>() ;
+        servers.stream().forEach(server -> {
+            addresses.add(new ServerAddress(server.getHost(), server.getPort()));
+        });
+
 
         final ReadPreference readPreference = ReadPreference.primaryPreferred();
         final WriteConcern writeConcern = WriteConcern.ACKNOWLEDGED;
@@ -61,17 +68,10 @@ public enum MongoBean {
             .writeConcern(writeConcern)
             .build();
 
-        if (servers.size() == 1) {
-
-            mongo = new MongoClient(servers.get(0), mongoOptions);
-
+        if (addresses.size() == 1) {
+            mongo = new MongoClient(addresses.get(0), mongoOptions);
         } else {
-
-            final List<ServerAddress> cluster = new ArrayList<>();
-            servers.stream().forEach(ip -> {
-                cluster.add(new ServerAddress(ip));
-            });
-            mongo = new MongoClient(cluster, mongoOptions);
+            mongo = new MongoClient(addresses, mongoOptions);
         }
 
         mongo.setReadPreference(readPreference);
