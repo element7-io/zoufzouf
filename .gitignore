@@ -10,11 +10,9 @@ build/
 .classpath
 .project
 .settings
+properties.yml
 out/
 *.class
-*.yml
-!.travis.yml
-!wercker.yml
 _builds/
 _projects/
 _steps/
