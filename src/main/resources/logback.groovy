@@ -54,6 +54,5 @@ appender("WARN-LOG", RollingFileAppender) {
     }
 }
 
-logger("be.pixxis", ERROR, ["EMAIL"])
 logger("be.pixxis", WARN, ["WARN-LOG"])
 logger("be.pixxis", INFO, ["FILE", "STDOUT"])
