@@ -7,6 +7,8 @@ Snap CI   | [![Build Status](https://snap-ci.com/glnds/zoufzouf/branch/master/bu
 Wercker   | [![wercker status](https://app.wercker.com/status/23fc34d88dcf586ed6032c6951735af7/m "wercker status")](https://app.wercker.com/project/bykey/23fc34d88dcf586ed6032c6951735af7)
 
 
+*Note: this project is used to evaluate the different CI/CD solutions listed above*
+
 # ZoufZouf
 
 Log Analysis for Amazon CloudFront
