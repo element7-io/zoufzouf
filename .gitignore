@@ -1,8 +1,7 @@
 .DS_Store
 *.properties
-gradle/
-.gradle/
 target/
+.gradle/
 build/
 *.iml
 *.ipr
@@ -16,3 +15,8 @@ out/
 *.class
 *.yml
 !.travis.yml
+!wercker.yml
+_builds/
+_projects/
+_steps/
+_cache/
