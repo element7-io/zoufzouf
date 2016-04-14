@@ -4,6 +4,7 @@ services:
   - mongo:3.2
 
 box: java:8-jdk
+
 dev:
   steps:
     - script:
@@ -13,3 +14,8 @@ dev:
         name: run gradle
         code: ./gradlew run
 
+build:
+  steps:
+    - script:
+        name: run gradle build
+        code: ./gradlew --full-stacktrace -q --project-cache-dir=$WERCKER_CACHE_DIR build
