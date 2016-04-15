@@ -2,6 +2,7 @@
 CI        |  Status
 ----------|-------
 Codeship  | [![Build Status](https://codeship.com/projects/c82b46a0-e47d-0133-367d-626500d789c1/status?branch=master)](https://codeship.com/projects/146357)
+Drone.io  | [![Build Status](https://drone.io/github.com/glnds/zoufzouf/status.png)](https://drone.io/github.com/glnds/zoufzouf/latest)
 Travis CI | [![Build Status](https://travis-ci.org/glnds/zoufzouf.svg?branch=master)](https://travis-ci.org/glnds/zoufzouf)
 Snap CI   | [![Build Status](https://snap-ci.com/glnds/zoufzouf/branch/master/build_image)](https://snap-ci.com/glnds/zoufzouf/branch/master)
 Circle CI | [![Circle CI](https://circleci.com/gh/glnds/zoufzouf.svg?style=svg)](https://circleci.com/gh/glnds/zoufzouf)
