@@ -3,10 +3,19 @@ apply plugin:  'groovy'
 apply plugin: 'application'
 
 group = 'be.pixxis'
-version = '1.0'
+version = '0.1-SNAPSHOT'
 mainClassName = 'be.pixxis.zoufzouf.LogSlurper'
 sourceCompatibility = 1.8
-version = '0.1.0'
+
+task wrapper (type: Wrapper){
+    gradleVersion = '2.12'
+}
+
+task printVersion {
+    doLast {
+        println "Version: $version"
+    }
+}
 
 jar {
     manifest {
