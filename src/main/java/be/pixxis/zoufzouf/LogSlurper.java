@@ -214,7 +214,6 @@ public class LogSlurper {
           }
         }
         LOG.info("{} tasks added for processing from {} folder", counter, LOGS_FOLDER);
-
       }
 
       pool.invokeAll(tasks);
