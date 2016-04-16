@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'application'
-apply plugin: 'build-announcements'
+apply plugin: 'checkstyle'
 
 group = 'be.pixxis'
 version = '0.1-SNAPSHOT'
@@ -13,6 +13,9 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.12'
 }
 
+checkstyle {
+    toolVersion = '6.17'
+}
 
 test {
     minHeapSize = '128m'

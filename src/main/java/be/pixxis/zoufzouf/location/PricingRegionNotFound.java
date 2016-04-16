@@ -7,7 +7,7 @@ package be.pixxis.zoufzouf.location;
  */
 public class PricingRegionNotFound extends Throwable {
 
-    public PricingRegionNotFound(final String msg) {
-        super(msg);
-    }
+  public PricingRegionNotFound(final String msg) {
+    super(msg);
+  }
 }

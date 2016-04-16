@@ -1,26 +1,26 @@
 package be.pixxis.zoufzouf.location;
 
 /**
- * Continent enumerations
+ * Continent enumerations.
  *
  * @author Gert Leenders
  */
 public enum Continent {
 
-    UNITED_STATES("United States"),
-    EUROPE("Europe"),
-    ASIA("Asia"),
-    AUSTRALIA("Australia"),
-    SOUTH_AMERICA("South America");
+  UNITED_STATES("United States"),
+  EUROPE("Europe"),
+  ASIA("Asia"),
+  AUSTRALIA("Australia"),
+  SOUTH_AMERICA("South America");
 
-    private final String name;
+  private final String name;
 
-    Continent(final String name) {
-        this.name = name;
-    }
+  Continent(final String name) {
+    this.name = name;
+  }
 
-    @Override
-    public String toString() {
-        return name;
-    }
+  @Override
+  public String toString() {
+    return name;
+  }
 }
