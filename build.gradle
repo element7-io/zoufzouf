@@ -1,25 +1,35 @@
 apply plugin: 'java'
-apply plugin:  'groovy'
+apply plugin: 'groovy'
+apply plugin: 'idea'
 apply plugin: 'application'
+apply plugin: 'build-announcements'
 
 group = 'be.pixxis'
 version = '0.1-SNAPSHOT'
 mainClassName = 'be.pixxis.zoufzouf.LogSlurper'
 sourceCompatibility = 1.8
 
-task wrapper (type: Wrapper){
+task wrapper(type: Wrapper) {
     gradleVersion = '2.12'
 }
 
-task printVersion (group: 'versioning', description: 'Prints the project version') << {
-    logger.quiet "Version: $version"
+
+test {
+    minHeapSize = '128m'
+    maxHeapSize = '256m'
+    forkEvery = 5
+    maxParallelForks = Runtime.runtime.availableProcessors() / 2
+    testLogging {
+        events 'started', 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
+    }
 }
 
 jar {
     manifest {
         attributes 'Implementation-Title': 'ZoufZouf, a multithreaded CloudFront log analyzer',
                 'Implementation-Version': version,
-                'Main-Class' : 'be.pixxis.zoufzouf.LogSlurper'
+                'Main-Class': 'be.pixxis.zoufzouf.LogSlurper'
     }
 }
 
@@ -60,7 +70,8 @@ dependencies {
     testCompile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
     testCompile "org.hamcrest:hamcrest-core:1.3" // only necessary if Hamcrest matchers are used
     testRuntime "cglib:cglib-nodep:3.1"          // allows mocking of classes (in addition to interfaces)
-    testRuntime "org.objenesis:objenesis:2.1"    // allows mocking of classes without default constructor (together with CGLIB)
+    testRuntime "org.objenesis:objenesis:2.1"
+    // allows mocking of classes without default constructor (together with CGLIB)
 }
 
 compileJava {
