@@ -11,10 +11,8 @@ task wrapper (type: Wrapper){
     gradleVersion = '2.12'
 }
 
-task printVersion {
-    doLast {
-        println "Version: $version"
-    }
+task printVersion (group: 'versioning', description: 'Prints the project version') << {
+    logger.quiet "Version: $version"
 }
 
 jar {
