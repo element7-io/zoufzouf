@@ -20,7 +20,7 @@ public enum State {
 
     private final String name;
 
-    private State(final String name) {
+    State(final String name) {
         this.name = name;
     }
 

@@ -27,7 +27,7 @@ public enum Country {
 
     private final String name;
 
-    private Country(final String name) {
+    Country(final String name) {
         this.name = name;
     }
 

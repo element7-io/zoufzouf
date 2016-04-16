@@ -13,9 +13,6 @@ import static be.pixxis.zoufzouf.location.State.*;
  */
 public enum EdgeLocation {
 
-
-
-
     AMS1(AMSTERDAM, THE_NETHERLANDS, null, EUROPE, PR_EUROPE),
     AMS50(AMSTERDAM, THE_NETHERLANDS, null, EUROPE, PR_EUROPE),
     ARN1(STOCKHOLM, SWEDEN, null, EUROPE, PR_EUROPE),

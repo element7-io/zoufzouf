@@ -15,7 +15,7 @@ public enum Continent {
 
     private final String name;
 
-    private Continent(final String name) {
+    Continent(final String name) {
         this.name = name;
     }
 

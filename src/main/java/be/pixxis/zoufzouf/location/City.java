@@ -1,7 +1,7 @@
 package be.pixxis.zoufzouf.location;
 
 /**
- * City enumerations
+ * City enumeration
  *
  * @author Gert Leenders
  */
@@ -44,7 +44,7 @@ public enum City {
 
     private final String name;
 
-    private City(final String name) {
+    City(final String name) {
         this.name = name;
     }
 

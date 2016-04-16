@@ -17,7 +17,7 @@ public enum PricingRegion {
 
     private final String name;
 
-    private PricingRegion(final String name) {
+    PricingRegion(final String name) {
         this.name = name;
     }
 
