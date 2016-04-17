@@ -18,6 +18,8 @@ Log Analysis for Amazon CloudFront
 
 
 ## Technology stack
+- Gradle
+- Spock
 - Java 8
 - Persistence layer options
 	- MongoDB
