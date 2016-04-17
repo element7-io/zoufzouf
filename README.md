@@ -16,7 +16,6 @@ Wercker   | [![wercker status](https://app.wercker.com/status/23fc34d88dcf586ed6
 
 Log Analysis for Amazon CloudFront
 
-
 ## Technology stack
 - Gradle
 - Spock
