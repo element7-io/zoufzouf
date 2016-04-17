@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -107,25 +108,31 @@ public class LogSlurper {
 
   private void init() {
 
-    final InputStream yamlStream =
-        LogSlurper.class.getClass().getResourceAsStream("/properties.yml");
 
-    if (yamlStream != null) {
+    try (
+        final InputStream yamlStream =
+            LogSlurper.class.getClass().getResourceAsStream("/properties.yml")) {
 
-      final Yaml yaml = new Yaml();
-      config = yaml.loadAs(yamlStream, Configuration.class);
-      LOG.info("Yaml configuration file initialized.");
+      if (yamlStream != null) {
 
-      // Use Docker container links if environment variables exists
-      final Map<String, String> env = System.getenv();
-      final String mongoLink = env.get("MONGO_PORT_27017_TCP");
-      if (mongoLink != null) {
-        config.setFromEnv(mongoLink);
-        LOG.info("Using Docker mongo Link");
+        final Yaml yaml = new Yaml();
+        config = yaml.loadAs(yamlStream, Configuration.class);
+        LOG.info("Yaml configuration file initialized.");
+
+        // Use Docker container links if environment variables exists
+        final Map<String, String> env = System.getenv();
+        final String mongoLink = env.get("MONGO_PORT_27017_TCP");
+        if (mongoLink != null) {
+          config.setFromEnv(mongoLink);
+          LOG.info("Using Docker mongo Link");
+        }
+
+        blobStoreContext = ContextBuilder.newBuilder("aws-s3").credentials(config.getAwsAccessKey(),
+            config.getAwsSecretKey()).buildView(BlobStoreContext.class);
       }
-
-      blobStoreContext = ContextBuilder.newBuilder("aws-s3").credentials(config.getAwsAccessKey(),
-          config.getAwsSecretKey()).buildView(BlobStoreContext.class);
+    } catch (IOException ie) {
+      LOG.error(ie.getMessage());
+      throw new RuntimeException(ie.getMessage());
     }
   }
 
@@ -141,10 +148,11 @@ public class LogSlurper {
       LOG.info("No other application instance running. Proceeding...");
     } catch (SocketException se) {
       LOG.info("Application run aborted, other application instance already running!");
-      System.exit(0);
-    } catch (Exception ed) {
-      LOG.error(ed.getMessage(), ed);
-      System.exit(1);
+      throw new RuntimeException("Application run aborted, other application instance already "
+          + "running!");
+    } catch (Exception ex) {
+      LOG.error(ex.getMessage(), ex);
+      throw new RuntimeException(ex.getMessage());
     }
   }
 
@@ -155,6 +163,7 @@ public class LogSlurper {
    * When the log file is processed it is moved from the 'logs/processing' folder to the
    * 'logs/processed' folder.
    */
+  @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("IS2_INCONSISTENT_SYNC")
   public void analyze() {
 
     try {
@@ -228,7 +237,7 @@ public class LogSlurper {
               - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(durationTime))
       );
 
-      LOG.info("{} lines processed", processedLines);
+      LOG.info("{} lines processed", this.processedLines);
       LOG.info("Finished, duration {}", duration);
 
     } catch (Exception ex) {
@@ -237,7 +246,6 @@ public class LogSlurper {
       // Close connection
       blobStoreContext.close();
       MongoBean.INSTANCE.shutdown();
-      System.exit(0);
     }
   }
 

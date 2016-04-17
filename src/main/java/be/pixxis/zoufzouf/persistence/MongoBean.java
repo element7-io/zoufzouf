@@ -96,13 +96,8 @@ public enum MongoBean {
       throw new RuntimeException("Mongo DB should have been initialized");
     }
 
-    if (mongo != null) {
-
-      final MongoDatabase cloudfront = mongo.getDatabase(CLOUDFRONT);
-      return cloudfront;
-    }
-
-    return null;
+    final MongoDatabase cloudfront = mongo.getDatabase(CLOUDFRONT);
+    return cloudfront;
   }
 
   /**

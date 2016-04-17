@@ -3,6 +3,7 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
 
 group = 'be.pixxis'
 version = '0.1-SNAPSHOT'
@@ -68,6 +69,8 @@ dependencies {
     // MongoDB
     compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.2.2'
     compile group: 'org.mongojack', name: 'mongojack', version: '2.6.0'
+
+    compile "com.google.code.findbugs:findbugs:3.0.1"
 
     // Spock testing depencies
     compile 'org.codehaus.groovy:groovy-all:2.4.5'

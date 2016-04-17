@@ -75,10 +75,10 @@ public class LogSlurperThread<T> implements Callable<T> {
         try {
 
           final Reader decoder = new InputStreamReader(gzipInputStream, "UTF-8");
-          final BufferedReader reader = new BufferedReader(decoder);
-
-          for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-            processRawData(line);
+          try ( final BufferedReader reader = new BufferedReader(decoder)) {
+            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+              processRawData(line);
+            }
           }
 
         } catch (ExportException ex) {
@@ -145,7 +145,7 @@ public class LogSlurperThread<T> implements Callable<T> {
           && logMsg.get("sc-status").startsWith("20")) {
 
         processLogLine(logMsg.get("cs-uri-stem"), logMsg.get("cs-uri-query"), logMsg.get("date"),
-            logMsg.get("x-edge-location"), Long.valueOf(logMsg.get("sc-bytes")));
+            logMsg.get("x-edge-location"), Long.parseLong(logMsg.get("sc-bytes")));
 
       } else if (logMsg.get("sc-status").equals("000")) {
         // Ignore: connection closed before request was complete.
@@ -171,7 +171,7 @@ public class LogSlurperThread<T> implements Callable<T> {
           || logMsg.get("x-event").equals("pause") || logMsg.get("x-event").equals("stop"))) {
 
         processLogLine(logMsg.get("x-sname"), logMsg.get("x-sname-query"), logMsg.get("date"),
-            logMsg.get("x-edge-location"), Long.valueOf(logMsg.get("sc-bytes")));
+            logMsg.get("x-edge-location"), Long.parseLong(logMsg.get("sc-bytes")));
 
       } else {
         LOG.trace(line);
@@ -259,7 +259,7 @@ public class LogSlurperThread<T> implements Callable<T> {
         // bytes, userId)
 
         // @GuardedBy("putIfAbsent atomic update on cache")
-        String channelId = LogSlurper.LOCAL_CACHE.get(courseId);
+        // String channelId = LogSlurper.LOCAL_CACHE.get(courseId);
         //                if (channelId == null) {
         //                    channelId = MongoBean.INSTANCE.findCourseChannelId(courseId)
         //                    Analyzer.localCache.putIfAbsent(courseId, channelId)

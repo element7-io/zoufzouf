@@ -90,7 +90,7 @@ public class Configuration {
     final Matcher matcher = REGEX_MONGO_URL.matcher(mongoUrl);
     while (matcher.find()) {
       this.serverAddresses.add(new ServerAddress(matcher.group(4),
-          Integer.valueOf(matcher.group(5))));
+          Integer.parseInt(matcher.group(5))));
     }
   }
 
