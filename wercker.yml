@@ -7,15 +7,15 @@ box: java:8-jdk
 
 dev:
   steps:
-    - script:
-        name: show environment variables
-        code: env
+    # - script:
+    #     name: show environment variables
+    #     code: env
     - script:
         name: run gradle
-        code: ./gradlew run
+        code: ./gradlew -qs run
 
 build:
   steps:
     - script:
-        name: run gradle build
-        code: ./gradlew --full-stacktrace -q --project-cache-dir=$WERCKER_CACHE_DIR build
+        name: run gradle assemble check
+        code: ./gradlew --full-stacktrace -q --project-cache-dir=$WERCKER_CACHE_DIR assemble check

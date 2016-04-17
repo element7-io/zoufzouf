@@ -21,7 +21,8 @@ test {
     minHeapSize = '128m'
     maxHeapSize = '256m'
     forkEvery = 5
-    maxParallelForks = Runtime.runtime.availableProcessors() / 2
+    def forks = Runtime.runtime.availableProcessors() / 2
+    maxParallelForks = forks < 1 ? 1 : forks
     testLogging {
         events 'started', 'passed', 'skipped', 'failed'
         exceptionFormat = 'full'
