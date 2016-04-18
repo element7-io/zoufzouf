@@ -6,4 +6,4 @@ def build = System.env.CI_BUILD_NUMBER // Codeship
 if (build == null) {
     build = System.env.SOURCE_BUILD_NUMBER
 }
-project.version = new ProjectVersion(0, 1, build)
+project.version = new ProjectVersion(System.env.MAJOR_VERSION, System.env.MINOR_VERSION, build)

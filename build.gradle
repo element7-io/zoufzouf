@@ -6,15 +6,26 @@ apply plugin: 'findbugs'
 apply plugin: 'pmd'
 apply plugin: 'jacoco'
 apply from: "$rootDir/gradle/versioning.gradle"
-
+apply plugin: 'com.bmuschko.docker-remote-api'
 
 group = 'be.pixxis'
-//version = '0.1-SNAPSHOT'
 mainClassName = 'be.pixxis.zoufzouf.LogSlurper'
 sourceCompatibility = 1.8
 
 task wrapper(type: Wrapper) {
+    description = 'bootstrap the gradle wrapper'
     gradleVersion = '2.12'
+}
+
+// Declare external dependencies for the build script itself.
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:2.6.8'
+    }
 }
 
 idea {
@@ -123,7 +134,6 @@ jar {
     dependsOn createBuildInfoFile
     from(buildDir) {
         include 'build-info.properties'
-//        into('WEB-INF/classes')
     }
 
     manifest {
@@ -135,12 +145,12 @@ jar {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
-
     // JSON
-    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+//    compile 'com.googlecode.json-simple:json-simple:1.1.1'
 
     compile group: 'org.yaml', name: 'snakeyaml', version: '1.17'
 
