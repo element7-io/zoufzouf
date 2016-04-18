@@ -7,24 +7,6 @@ apply plugin: 'pmd'
 apply plugin: 'jacoco'
 apply from: "$rootDir/gradle/versioning.gradle"
 
-//allprojects {
-//    apply plugin: 'idea'
-//    group = 'com.manning.gia'
-//    version = '0.1'
-//
-//    apply from: "$rootDir/gradle/versioning.gradle"
-//}
-//
-//subprojects {
-//    apply plugin: 'java'
-//
-//    repositories {
-//        mavenCentral()
-//    }
-//}
-
-
-
 
 group = 'be.pixxis'
 //version = '0.1-SNAPSHOT'
@@ -129,7 +111,21 @@ jacocoTestReport {
     }
 }
 
+task createBuildInfoFile << {
+    def buildInfoFile = new File("$buildDir/build-info.properties")
+    Properties props = new Properties()
+    props.setProperty('version', project.version.toString())
+    props.setProperty('timestamp', project.buildTimestamp)
+    props.store(buildInfoFile.newWriter(), null)
+}
+
 jar {
+    dependsOn createBuildInfoFile
+    from(buildDir) {
+        include 'build-info.properties'
+//        into('WEB-INF/classes')
+    }
+
     manifest {
         attributes 'Implementation-Title': 'ZoufZouf, a multithreaded CloudFront log analyzer',
                 'Implementation-Version': version,
@@ -180,5 +176,3 @@ dependencies {
     testRuntime "org.objenesis:objenesis:2.1"
     // allows mocking of classes without default constructor (together with CGLIB)
 }
-
-
