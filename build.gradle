@@ -1,18 +1,44 @@
-apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
 apply plugin: 'pmd'
+apply plugin: 'jacoco'
+apply from: "$rootDir/gradle/versioning.gradle"
+
+//allprojects {
+//    apply plugin: 'idea'
+//    group = 'com.manning.gia'
+//    version = '0.1'
+//
+//    apply from: "$rootDir/gradle/versioning.gradle"
+//}
+//
+//subprojects {
+//    apply plugin: 'java'
+//
+//    repositories {
+//        mavenCentral()
+//    }
+//}
+
+
+
 
 group = 'be.pixxis'
-version = '0.1-SNAPSHOT'
+//version = '0.1-SNAPSHOT'
 mainClassName = 'be.pixxis.zoufzouf.LogSlurper'
 sourceCompatibility = 1.8
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.12'
+}
+
+idea {
+    project {
+        languageLevel = '1.8'
+    }
 }
 
 compileJava {
@@ -21,11 +47,31 @@ compileJava {
 
 checkstyle {
     toolVersion = '6.17'
+    showViolations = false
+    ignoreFailures = false
 }
 
 pmd {
     toolVersion = '5.4.1'
     ignoreFailures = false
+}
+tasks.withType(Pmd) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+findbugs {
+    toolVersion = '3.0.1'
+    ignoreFailures = false
+    effort = 'max'
+}
+tasks.withType(FindBugs){
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
 }
 
 configurations {
@@ -68,6 +114,20 @@ task integrationTest(type: Test) {
     reports.junitXml.destination = file("$reports.junitXml.destination/integration")
 }
 check.dependsOn integrationTest
+
+jacoco {
+    toolVersion = "0.7.6.201602180812"
+}
+
+jacocoTestReport {
+    group = "reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    reports {
+        xml.enabled true
+        html.enabled true
+        csv.enabled false
+    }
+}
 
 jar {
     manifest {
