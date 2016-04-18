@@ -70,7 +70,7 @@ public class LogSlurper {
   }
 
   /**
-   * Move a file from one folder to another.
+   * Move a file from one AWS S3 folder to another.
    *
    * @param blobStore         the blob store
    * @param sourceKey         the file source location
@@ -79,8 +79,8 @@ public class LogSlurper {
    * @throws KeyNotFoundException if a key is not found
    */
   @GuardedBy("ThreadLocal blobStore")
-  public static String moveFile(final BlobStore blobStore, final String sourceKey,
-                                final String destinationFolder) throws KeyNotFoundException {
+  private String moveFile(final BlobStore blobStore, final String sourceKey,
+                          final String destinationFolder) throws KeyNotFoundException {
 
     final Blob blob = blobStore.getBlob(BUCKET, sourceKey);
 
@@ -95,11 +95,8 @@ public class LogSlurper {
       return destinationKey;
 
     } else {
-
       throw new KeyNotFoundException(sourceKey, BUCKET, "Error while moving file.");
-
     }
-
   }
 
   public Configuration getConfig() {

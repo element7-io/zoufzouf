@@ -15,6 +15,10 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.12'
 }
 
+compileJava {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+
 checkstyle {
     toolVersion = '6.17'
 }
@@ -22,6 +26,22 @@ checkstyle {
 pmd {
     toolVersion = '5.4.1'
     ignoreFailures = false
+}
+
+configurations {
+    integrationCompile.extendsFrom testCompile
+    integrationRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+    integration {
+        groovy {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration/groovy')
+        }
+        resources.srcDir file('src/integration/resources')
+    }
 }
 
 test {
@@ -34,7 +54,20 @@ test {
         events 'started', 'passed', 'skipped', 'failed'
         exceptionFormat = 'full'
     }
+
+    reports.html.destination = file("$reports.html.destination/unit")
+    reports.junitXml.destination = file("$reports.junitXml.destination/unit")
 }
+
+task integrationTest(type: Test) {
+    description = "Run integration tests (located in src/intTest/...)."
+    testClassesDir = sourceSets.integration.output.classesDir
+    classpath = sourceSets.integration.runtimeClasspath
+    outputs.upToDateWhen { false }
+    reports.html.destination = file("$reports.html.destination/integration")
+    reports.junitXml.destination = file("$reports.junitXml.destination/integration")
+}
+check.dependsOn integrationTest
 
 jar {
     manifest {
@@ -88,7 +121,4 @@ dependencies {
     // allows mocking of classes without default constructor (together with CGLIB)
 }
 
-compileJava {
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-}
 
