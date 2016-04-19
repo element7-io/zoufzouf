@@ -12,6 +12,11 @@ group = 'be.pixxis'
 mainClassName = 'be.pixxis.zoufzouf.LogSlurper'
 sourceCompatibility = 1.8
 
+configurations {
+    integrationCompile.extendsFrom testCompile
+    integrationRuntime.extendsFrom testRuntime
+}
+
 task wrapper(type: Wrapper) {
     description = 'bootstrap the gradle wrapper'
     gradleVersion = '2.12'
@@ -65,11 +70,6 @@ tasks.withType(FindBugs){
         xml.enabled = false
         html.enabled = true
     }
-}
-
-configurations {
-    integrationCompile.extendsFrom testCompile
-    integrationRuntime.extendsFrom testRuntime
 }
 
 sourceSets {
