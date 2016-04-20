@@ -1,13 +1,13 @@
 
 CI        | Slack | Status | 
 ----------|-------|--------|
-Codeship  | App   | [![Build Status](https://codeship.com/projects/c82b46a0-e47d-0133-367d-626500d789c1/status?branch=master)](https://codeship.com/projects/146357)
-Drone.io  | ?   | [![Build Status](https://drone.io/github.com/glnds/zoufzouf/status.png)](https://drone.io/github.com/glnds/zoufzouf/latest)
-Travis CI | ?   | [![Build Status](https://travis-ci.org/glnds/zoufzouf.svg?branch=master)](https://travis-ci.org/glnds/zoufzouf)
-Snap CI   | ?   | [![Build Status](https://snap-ci.com/glnds/zoufzouf/branch/master/build_image)](https://snap-ci.com/glnds/zoufzouf/branch/master)
-Circle CI | App   | [![Circle CI](https://circleci.com/gh/glnds/zoufzouf.svg?style=svg)](https://circleci.com/gh/glnds/zoufzouf)
-Buddy     | App   | [Not Available](https://app.buddy.works/leendersgert)
-Wercker   | wercker.yml   | [![wercker status](https://app.wercker.com/status/23fc34d88dcf586ed6032c6951735af7/m "wercker status")](https://app.wercker.com/project/bykey/23fc34d88dcf586ed6032c6951735af7)
+Codeship  | App         | [![Build Status](https://codeship.com/projects/c82b46a0-e47d-0133-367d-626500d789c1/status?branch=master)](https://codeship.com/projects/146357)
+Drone.io  | ?           | [![Build Status](https://drone.io/github.com/glnds/zoufzouf/status.png)](https://drone.io/github.com/glnds/zoufzouf/latest)
+Travis CI | travis.yml  | [![Build Status](https://travis-ci.org/glnds/zoufzouf.svg?branch=master)](https://travis-ci.org/glnds/zoufzouf)
+Snap CI   | ?           | [![Build Status](https://snap-ci.com/glnds/zoufzouf/branch/master/build_image)](https://snap-ci.com/glnds/zoufzouf/branch/master)
+Circle CI | App         | [![Circle CI](https://circleci.com/gh/glnds/zoufzouf.svg?style=svg)](https://circleci.com/gh/glnds/zoufzouf)
+Buddy     | App         | [Not Available](https://app.buddy.works/leendersgert)
+Wercker   | wercker.yml | [![wercker status](https://app.wercker.com/status/23fc34d88dcf586ed6032c6951735af7/m "wercker status")](https://app.wercker.com/project/bykey/23fc34d88dcf586ed6032c6951735af7)
 
 
 *Note: this project is also used to evaluate the different CI/CD solutions listed above.*
