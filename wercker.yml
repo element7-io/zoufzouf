@@ -22,5 +22,4 @@ build:
   after-steps:
     - slack-notifier:
         url: https://hooks.slack.com/services/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
-        channel: notifications
         username: Wercker
