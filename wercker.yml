@@ -19,3 +19,8 @@ build:
     - script:
         name: run gradle assemble check
         code: ./gradlew --full-stacktrace -q --project-cache-dir=$WERCKER_CACHE_DIR assemble check
+  after-steps:
+    - slack-notifier:
+        url: https://hooks.slack.com/services/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
+        channel: notifications
+        username: Wercker
