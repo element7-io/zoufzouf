@@ -17,13 +17,7 @@ Wercker   | wercker.yml | [![wercker status](https://app.wercker.com/status/23fc
 [![GitHub release](https://img.shields.io/github/release/glnds/zoufzouf.svg?style=flat-square)](https://github.com/glnds/zoufzouf/releases)
 [![GitHub license](https://img.shields.io/github/license/glnds/zoufzouf.svg?style=flat-square)](https://github.com/glnds/zoufzouf/blob/master/LICENSE)
 
-
 Log Analysis for Amazon CloudFront
-
-## Docker image
-<a href='https://imagelayers.io/?images=glnds/zoufzouf:latest' title='Get your own badge on imagelayers.io'><img src='https://imagelayers.io/badge/glnds/zoufzouf:latest.svg'></a>
-
-https://hub.docker.com/r/glnds/zoufzouf/
 
 
 ## Technology stack
@@ -56,8 +50,25 @@ servers:
 
 ## Run
 
-### Run using MongoDB
+### Docker
 
-Run MongoDb as a docker container
+Docker image: https://hub.docker.com/r/glnds/zoufzouf/
 
+- Run with docker-compose: 
+	```
+	$ docker-compose up
+	```
+
+- Run MongoDB as a separate container
+	```
 	docker run --name my-local-mongo -v mongo-data:/data/db -p 27017:27017 -d mongo
+	```
+	
+### Standalone
+
+To run as standalone application run:
+```
+./gradlew run
+```
+
+*When running the app as standalone either a local MongoDB or MongoDB container should be running.*
