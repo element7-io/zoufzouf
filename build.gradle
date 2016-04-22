@@ -186,3 +186,7 @@ dependencies {
     testRuntime "org.objenesis:objenesis:2.1"
     // allows mocking of classes without default constructor (together with CGLIB)
 }
+
+distributions {
+  version = null
+}
