@@ -1,6 +1,4 @@
 
-![test](https://imagelayers.io/badge/glnds/zoufzouf:latest.svg)
-
 CI        | Slack | Docker | Status | 
 ----------|-------|--------|--------|
 Codeship  | App         | Codeship Jet / Paying | [![Build Status](https://codeship.com/projects/c82b46a0-e47d-0133-367d-626500d789c1/status?branch=master)](https://codeship.com/projects/146357)
@@ -23,8 +21,7 @@ Wercker   | wercker.yml | [![wercker status](https://app.wercker.com/status/23fc
 Log Analysis for Amazon CloudFront
 
 ## Docker image
-![test](https://imagelayers.io/badge/glnds/zoufzouf:latest.svg)
-[![ImageLayers](https://imagelayers.io/badge/glnds/zoufzouf:latest.svg)](https://imagelayers.io/?images=glnds/zoufzouf:latest)
+<a href='https://imagelayers.io/?images=glnds/zoufzouf:latest' title='Get your own badge on imagelayers.io'><img src='https://imagelayers.io/badge/glnds/zoufzouf:latest.svg'></a>
 
 https://hub.docker.com/r/glnds/zoufzouf/
 
