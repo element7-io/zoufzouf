@@ -1,7 +1,7 @@
 
-CI        | Slack | Status | 
-----------|-------|--------|
-Codeship  | App         | [![Build Status](https://codeship.com/projects/c82b46a0-e47d-0133-367d-626500d789c1/status?branch=master)](https://codeship.com/projects/146357)
+CI        | Slack | Docker | Status | 
+----------|-------|--------|--------|
+Codeship  | App         | Codeship Jet / Paying | [![Build Status](https://codeship.com/projects/c82b46a0-e47d-0133-367d-626500d789c1/status?branch=master)](https://codeship.com/projects/146357)
 Drone.io  | Next Major  | [![Build Status](https://drone.io/github.com/glnds/zoufzouf/status.png)](https://drone.io/github.com/glnds/zoufzouf/latest)
 Travis CI | travis.yml  | [![Build Status](https://travis-ci.org/glnds/zoufzouf.svg?branch=master)](https://travis-ci.org/glnds/zoufzouf)
 Snap CI   | Web APi     | [![Build Status](https://snap-ci.com/glnds/zoufzouf/branch/master/build_image)](https://snap-ci.com/glnds/zoufzouf/branch/master)
@@ -14,7 +14,17 @@ Wercker   | wercker.yml | [![wercker status](https://app.wercker.com/status/23fc
 
 # ZoufZouf
 
+[![GitHub release](https://img.shields.io/github/release/glnds/zoufzouf.svg?style=flat-square)](https://github.com/glnds/zoufzouf/releases)
+[![GitHub license](https://img.shields.io/github/license/glnds/zoufzouf.svg?style=flat-square)](https://github.com/glnds/zoufzouf/blob/master/LICENSE)
+
+
 Log Analysis for Amazon CloudFront
+
+## Docker image
+[![](https://imagelayers.io/badge/glnds/zoufzouf:latest.svg)](https://imagelayers.io/?images=glnds/zoufzouf:latest 'Get your own badge on imagelayers.io')
+
+https://hub.docker.com/r/glnds/zoufzouf/
+
 
 ## Technology stack
 - Gradle
