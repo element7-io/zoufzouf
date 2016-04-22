@@ -21,6 +21,7 @@ Wercker   | wercker.yml | [![wercker status](https://app.wercker.com/status/23fc
 Log Analysis for Amazon CloudFront
 
 ## Docker image
+![test](https://imagelayers.io/badge/glnds/zoufzouf:latest.svg)
 [![ImageLayers](https://imagelayers.io/badge/glnds/zoufzouf:latest.svg)](https://imagelayers.io/?images=glnds/zoufzouf:latest)
 
 https://hub.docker.com/r/glnds/zoufzouf/
