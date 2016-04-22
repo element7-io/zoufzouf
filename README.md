@@ -1,4 +1,6 @@
 
+![test](https://imagelayers.io/badge/glnds/zoufzouf:latest.svg)
+
 CI        | Slack | Docker | Status | 
 ----------|-------|--------|--------|
 Codeship  | App         | Codeship Jet / Paying | [![Build Status](https://codeship.com/projects/c82b46a0-e47d-0133-367d-626500d789c1/status?branch=master)](https://codeship.com/projects/146357)
