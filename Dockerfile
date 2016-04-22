@@ -3,4 +3,6 @@ MAINTAINER Gert Leenders <leenders.gert@gmail.com>
 
 WORKDIR /app
 
-ADD build/
+ADD build/distributions/ZoufZouf.tar ./
+
+CMD ./ZoufZouf/bin/ZoufZouf

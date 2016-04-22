@@ -1,0 +1,12 @@
+version: '2'
+services:
+  zoufzouf:
+    build: .
+    image: glnds/zoufzouf
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:3.2
+    ports:
+      - "27017:27017"
+
