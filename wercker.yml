@@ -26,5 +26,5 @@ deploy:
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
         repository: glnds/zoufzouf
-        # registry: https://hub.docker.com
+        registry: https://hub.docker.com
         tag: wercker
