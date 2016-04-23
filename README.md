@@ -6,8 +6,7 @@ Drone.io  | Next Major  | [![Build Status](https://drone.io/github.com/glnds/zou
 Travis CI | travis.yml  | [![Build Status](https://travis-ci.org/glnds/zoufzouf.svg?branch=master)](https://travis-ci.org/glnds/zoufzouf)
 Snap CI   | Web APi     | [![Build Status](https://snap-ci.com/glnds/zoufzouf/branch/master/build_image)](https://snap-ci.com/glnds/zoufzouf/branch/master)
 Circle CI | App         | [![Circle CI](https://circleci.com/gh/glnds/zoufzouf.svg?style=svg)](https://circleci.com/gh/glnds/zoufzouf)
-Buddy     | App         | [Not Available](https://app.buddy.works/leendersgert)
-Wercker   | wercker.yml | [![wercker status](https://app.wercker.com/status/23fc34d88dcf586ed6032c6951735af7/m "wercker status")](https://app.wercker.com/project/bykey/23fc34d88dcf586ed6032c6951735af7)
+Wercker   | wercker.yml | Standard[![wercker status](https://app.wercker.com/status/23fc34d88dcf586ed6032c6951735af7/m "wercker status")](https://app.wercker.com/project/bykey/23fc34d88dcf586ed6032c6951735af7)
 
 
 *Note: this project is also used to evaluate the different CI/CD solutions listed above.*
