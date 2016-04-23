@@ -8,9 +8,10 @@ services:
   - docker
 
 after_success:
+  - ./gradlew distTar
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker build -t glnds/zoufzouf .
-  - docker push glnds/zoufzouf:0.1
+  - docker build -t glnds/zoufzouf:travis .
+  - docker push glnds/zoufzouf:travis
 
 notifications:
   slack:
