@@ -1,5 +1,4 @@
 ---
-
 services:
   - mongo:3.2
 
@@ -7,9 +6,6 @@ box: java:8-jdk
 
 dev:
   steps:
-    # - script:
-    #     name: show environment variables
-    #     code: env
     - script:
         name: run gradle
         code: ./gradlew -qs run
@@ -23,3 +19,12 @@ build:
     - slack-notifier:
         url: https://hooks.slack.com/services/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
         username: Wercker
+
+deploy:
+  steps:
+    - internal/docker-push:
+        username: $DOCKER_USERNAME
+        password: $DOCKER_PASSWORD
+        tag: 0.1
+        repository: glnds/zoufzouf
+        registry: https://hub.docker.com
