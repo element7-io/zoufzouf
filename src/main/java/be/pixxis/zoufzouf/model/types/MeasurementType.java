@@ -7,8 +7,6 @@ package be.pixxis.zoufzouf.model.types;
  * @version $Id$
  */
 public enum MeasurementType {
-    X,
-    Y,
-    Z,
+    MOVIE,
     USER
 }
