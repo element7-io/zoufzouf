@@ -25,6 +25,4 @@ deploy:
     - internal/docker-push:
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
-        tag: 0.1
         repository: glnds/zoufzouf
-        registry: https://registry.hub.docker.com
