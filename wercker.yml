@@ -27,4 +27,4 @@ deploy:
         password: $DOCKER_PASSWORD
         tag: 0.1
         repository: glnds/zoufzouf
-        registry: https://hub.docker.com
+        registry: https://registry.hub.docker.com
