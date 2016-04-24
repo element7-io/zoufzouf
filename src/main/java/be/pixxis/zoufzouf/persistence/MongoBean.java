@@ -40,7 +40,7 @@ public enum MongoBean {
   private static final Logger LOG = LoggerFactory.getLogger(MongoBean.class);
   private MongoClient mongo = null;
 
-  
+
   /**
    * Setup a new MongoDB connection.
    */
