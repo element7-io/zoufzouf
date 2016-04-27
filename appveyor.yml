@@ -26,4 +26,5 @@ matrix:
 
 notifications:
   - provider: Slack
-    incoming_webhook: https://hooks.slack.com/services/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
+    incoming_webhook:
+      secure: 2pECj8MighD5ehdGV+l2z3D2RNQeSuWz5lkZQYmJbVBrkKnBxTyPc9K9D1TZzeu/GMyLo6ATMOyuS5CXv5DlanTPrjmMDU1GWNMVuuMTMsg=
