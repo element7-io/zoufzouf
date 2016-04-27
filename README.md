@@ -12,6 +12,8 @@ Wercker   | [![wercker status](https://app.wercker.com/status/23fc34d88dcf586ed6
 
 # ZoufZouf
 
+[![Dependency Status](https://www.versioneye.com/user/projects/57206983fcd19a00454423e7/badge.svg?style=flat)](https://www.versioneye.com/user/projects/57206983fcd19a00454423e7)
+[![GitHub tag](https://img.shields.io/github/tag/glnds/zoufzouf.svg?style=flat-square)](https://github.com/glnds/zoufzouf/releases)
 [![GitHub release](https://img.shields.io/github/release/glnds/zoufzouf.svg?style=flat-square)](https://github.com/glnds/zoufzouf/releases)
 [![GitHub license](https://img.shields.io/github/license/glnds/zoufzouf.svg?style=flat-square)](https://github.com/glnds/zoufzouf/blob/master/LICENSE)
 
@@ -70,3 +72,5 @@ To run as standalone application run:
 ```
 
 *When running the app as standalone either a local MongoDB or MongoDB container should be running.*
+
+[![Analytics](https://ga-beacon.appspot.com/UA-77034813-1/zoufzouf/readme)](https://github.com/igrigorik/ga-beacon)
