@@ -24,3 +24,7 @@ environment:
 matrix:
   fast_finish: true
 
+notifications:
+- provider: Email
+  to:
+  - leenders.gert@gmail.com
