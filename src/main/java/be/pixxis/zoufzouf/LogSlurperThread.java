@@ -66,7 +66,8 @@ public class LogSlurperThread<T> implements Callable<T> {
 
       // Process the log file from withing the processing folder.
 
-      final Blob blob = blobStoreHolder.get().getBlob(LogSlurper.BUCKET, key);
+      final Blob blob = blobStoreHolder.get().getBlob(slurper.getConfig().getS3().getBucket() ,
+          key);
       if (blob != null) {
 
         final InputStream log = blob.getPayload().openStream();
@@ -86,7 +87,7 @@ public class LogSlurperThread<T> implements Callable<T> {
         }
 
         if (!this.slurper.getConfig().isDryRun()) {
-          blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
+          blobStoreHolder.get().removeBlob(slurper.getConfig().getS3().getBucket(), key);
         }
 
         slurper.increaseProcessedLines(processedLines);
@@ -98,7 +99,7 @@ public class LogSlurperThread<T> implements Callable<T> {
 
         try {
           if (!this.slurper.getConfig().isDryRun()) {
-            blobStoreHolder.get().removeBlob(LogSlurper.BUCKET, key);
+            blobStoreHolder.get().removeBlob(slurper.getConfig().getS3().getBucket(), key);
           }
         } catch (Exception ex) {
           LOG.error("Error while trying to delete key '{}'.", key);
@@ -235,7 +236,7 @@ public class LogSlurperThread<T> implements Callable<T> {
         // userId)
 
         // @GuardedBy("putIfAbsent atomic update on cache")
-        String channelId = LogSlurper.LOCAL_CACHE.get(presentationId);
+        String channelId = slurper.getLocalCache().get(presentationId);
         if (channelId == null) {
           // channelId = MongoBean.INSTANCE.findPresentationChannelId(presentationId)
           // LogSlurper.localCache.putIfAbsent(presentationId, channelId)

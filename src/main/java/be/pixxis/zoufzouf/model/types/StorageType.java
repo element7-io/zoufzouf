@@ -1,11 +1,11 @@
 package be.pixxis.zoufzouf.model.types;
 
 /**
- * Storage layer configuration options.
+ * StorageType layer configuration options.
  *
  * @author Gert Leenders
  */
-public enum Storage {
+public enum StorageType {
   MongoDB,
   Cassandra;
 }

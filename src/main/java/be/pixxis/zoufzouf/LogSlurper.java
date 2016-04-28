@@ -44,16 +44,14 @@ public class LogSlurper {
   //TODO: Capture unprocessed lines in an error file based on the number of fields (error-17
   // .log, error-18.log,....)
 
-  static final String BUCKET = "cf.pixxis.be";
   private static final Logger LOG = LoggerFactory.getLogger(LogSlurper.class);
-  private static final int NUMBER_OF_THREADS = 8;
-  private static final int CONCURRENCY_LEVEL = NUMBER_OF_THREADS / 4;
-  static final ConcurrentHashMap<String, String> LOCAL_CACHE =
-      new ConcurrentHashMap<String, String>(16, 0.9f, CONCURRENCY_LEVEL);
-  private static final int NUMBER_OF_FILES_TO_PROCESS = 1000;
-  private static final String LOGS_FOLDER = "logs/cloudfront";
-  private static final String LOGS_PROCESSING_FOLDER = "logs-processing/cloudfront";
   static BlobStoreContext blobStoreContext;
+
+  public ConcurrentHashMap<String, String> getLocalCache() {
+    return localCache;
+  }
+
+  private ConcurrentHashMap<String, String> localCache;
   private Configuration config;
   private long processedLines = 0;
 
@@ -82,7 +80,7 @@ public class LogSlurper {
   private String moveFile(final BlobStore blobStore, final String sourceKey,
                           final String destinationFolder) throws KeyNotFoundException {
 
-    final Blob blob = blobStore.getBlob(BUCKET, sourceKey);
+    final Blob blob = blobStore.getBlob(config.getS3().getBucket(), sourceKey);
 
     if (blob != null) {
 
@@ -90,12 +88,12 @@ public class LogSlurper {
           + sourceKey.substring(sourceKey.lastIndexOf('/') + 1);
 
       blob.getMetadata().setName(destinationKey);
-      blobStore.putBlob(BUCKET, blob);
-      blobStore.removeBlob(BUCKET, sourceKey);
+      blobStore.putBlob(config.getS3().getBucket(), blob);
+      blobStore.removeBlob(config.getS3().getBucket(), sourceKey);
       return destinationKey;
 
     } else {
-      throw new KeyNotFoundException(sourceKey, BUCKET, "Error while moving file.");
+      throw new KeyNotFoundException(sourceKey, config.getS3().getBucket(), "Error while moving file.");
     }
   }
 
@@ -103,8 +101,10 @@ public class LogSlurper {
     return config;
   }
 
+  /**
+   * Initialise the program properties specified in properties.yml
+   */
   private void init() {
-
 
     try (
         final InputStream yamlStream =
@@ -116,6 +116,11 @@ public class LogSlurper {
         config = yaml.loadAs(yamlStream, Configuration.class);
         LOG.info("Yaml configuration file initialized.");
 
+        if (config.getThreads() < 1) {
+          config.setThreads(8);
+        }
+        localCache = new ConcurrentHashMap<String, String>(16, 0.9f, config.getThreads() / 4);
+
         // Use Docker container links if environment variables exists
         final Map<String, String> env = System.getenv();
         final String mongoLink = env.get("MONGO_PORT_27017_TCP");
@@ -124,8 +129,10 @@ public class LogSlurper {
           LOG.info("Using Docker mongo Link");
         }
 
-        blobStoreContext = ContextBuilder.newBuilder("aws-s3").credentials(config.getAwsAccessKey(),
-            config.getAwsSecretKey()).buildView(BlobStoreContext.class);
+        blobStoreContext = ContextBuilder.newBuilder("aws-s3")
+            .credentials(
+                config.getS3().getAwsAccessKey(),
+                config.getS3().getAwsSecretKey()).buildView(BlobStoreContext.class);
       }
     } catch (IOException ie) {
       LOG.error(ie.getMessage());
@@ -168,9 +175,9 @@ public class LogSlurper {
       final long startTime = System.currentTimeMillis();
 
       LOG.info("Version 1.1,build_111");
-      LOG.info("Log analyzer started on bucket: {}", BUCKET);
-      LOG.info("Threads: {}, Concurrency level: {}", NUMBER_OF_THREADS, CONCURRENCY_LEVEL);
-      LOG.info("Batch size: {}", NUMBER_OF_FILES_TO_PROCESS);
+      LOG.info("Log analyzer started on bucket: {}", config.getS3().getBucket());
+      LOG.info("Threads: {}, Concurrency level: {}", config.getThreads(), config.getThreads() / 4);
+      LOG.info("Batch size: {}", config.getBatchSize());
 
       // Create a new MongoDB connection
       MongoBean.INSTANCE.init(config.getServerAddresses());
@@ -178,14 +185,14 @@ public class LogSlurper {
       // Create Container
       final BlobStore blobStore = blobStoreContext.getBlobStore();
 
-      final ExecutorService pool = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+      final ExecutorService pool = Executors.newFixedThreadPool(config.getThreads());
       final List<LogSlurperThread<Void>> tasks = new ArrayList<>();
 
       int counter = 0;
 
       // Cleanup the logs-processing folder if necessary.
-      for (StorageMetadata resourceMd : blobStore.list(BUCKET,
-          inDirectory(LOGS_PROCESSING_FOLDER).maxResults(1000))) {
+      for (StorageMetadata resourceMd : blobStore.list(config.getS3().getBucket(),
+          inDirectory(config.getS3().getLogsProcessingKey()).maxResults(1000))) {
 
         if (resourceMd.getType() == StorageType.BLOB) {
           LOG.trace("file: {} added to que for processing.", resourceMd.getName());
@@ -196,14 +203,14 @@ public class LogSlurper {
 
       if (counter > 0) {
 
-        LOG.info("{} tasks added for processing from {} folder", counter, LOGS_PROCESSING_FOLDER);
+        LOG.info("{} tasks added for processing from {} folder", counter, config.getS3().getLogsProcessingKey());
 
       } else {
 
         // Get the logs form the logs folder
         for (StorageMetadata resourceMd :
-            blobStore.list(BUCKET, inDirectory(LOGS_FOLDER)
-                .maxResults(NUMBER_OF_FILES_TO_PROCESS))) {
+            blobStore.list(config.getS3().getBucket(), inDirectory(config.getS3().getLogsKey())
+                .maxResults(config.getBatchSize()))) {
 
           if (resourceMd.getType() == StorageType.BLOB) {
 
@@ -213,13 +220,13 @@ public class LogSlurper {
               tasks.add(new LogSlurperThread<>(this, resourceMd.getName()));
             } else {
               final String processingKey = moveFile(blobStore, resourceMd.getName(),
-                  LOGS_PROCESSING_FOLDER);
+                  config.getS3().getLogsProcessingKey());
               tasks.add(new LogSlurperThread<>(this, processingKey));
             }
             counter++;
           }
         }
-        LOG.info("{} tasks added for processing from {} folder", counter, LOGS_FOLDER);
+        LOG.info("{} tasks added for processing from {} folder", counter, config.getS3().getLogsKey());
       }
 
       pool.invokeAll(tasks);
