@@ -1,12 +1,29 @@
-apply plugin: 'groovy'
-apply plugin: 'idea'
-apply plugin: 'application'
-apply plugin: 'checkstyle'
-apply plugin: 'findbugs'
-apply plugin: 'pmd'
-apply plugin: 'jacoco'
+
+
+// Declare external dependencies for the build script itself.
+//buildscript {
+//    repositories {
+//        jcenter()
+//    }
+//
+//    dependencies {
+//        classpath 'com.bmuschko:gradle-docker-plugin:2.6.8'
+//    }
+//}
+
+plugins {
+    id 'groovy'
+    id 'idea'
+    id 'application'
+    id 'checkstyle'
+    id 'findbugs'
+    id 'pmd'
+    id 'jacoco'
+//    id 'com.bmuschko.docker-remote-api'
+    id 'com.jfrog.bintray' version '1.6'
+}
+
 apply from: "$rootDir/gradle/versioning.gradle"
-apply plugin: 'com.bmuschko.docker-remote-api'
 
 group = 'be.pixxis'
 mainClassName = 'be.pixxis.zoufzouf.LogSlurper'
@@ -20,17 +37,6 @@ configurations {
 task wrapper(type: Wrapper) {
     description = 'bootstrap the gradle wrapper'
     gradleVersion = '2.12'
-}
-
-// Declare external dependencies for the build script itself.
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.bmuschko:gradle-docker-plugin:2.6.8'
-    }
 }
 
 idea {
@@ -65,7 +71,7 @@ findbugs {
     ignoreFailures = false
     effort = 'max'
 }
-tasks.withType(FindBugs){
+tasks.withType(FindBugs) {
     reports {
         xml.enabled = false
         html.enabled = true
@@ -143,7 +149,7 @@ jar {
     }
 }
 
-processResources{
+processResources {
     exclude '**/properties.yml'
 }
 
@@ -190,5 +196,30 @@ dependencies {
 }
 
 distributions {
-  version = null
+    version = null
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    configurations = ['archives']
+    dryRun = false //Whether to run this as dry-run, without deploying
+    publish = true //If version should be auto published after an upload
+    pkg {
+        repo = 'generic'
+        name = 'zoufzouf'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/glnds/zoufzouf.git'
+        desc = 'Multithreaded AWS CloudFront log Analyser '
+        githubRepo = 'glnds/zoufzouf' //Optional Github repository
+        githubReleaseNotesFile = 'README.md' //Optional Github readme file
+        version {
+            name = project.version //Bintray logical version name
+        }
+    }
+}
+
+task printProps << {
+    println System.getenv('BINTRAY_USER')
+    println System.getenv('BINTRAY_KEY')
 }
