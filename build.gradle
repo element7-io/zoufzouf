@@ -1,15 +1,13 @@
-
-
 // Declare external dependencies for the build script itself.
-//buildscript {
-//    repositories {
-//        jcenter()
-//    }
-//
-//    dependencies {
-//        classpath 'com.bmuschko:gradle-docker-plugin:2.6.8'
-//    }
-//}
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:2.6.8'
+    }
+}
 
 plugins {
     id 'groovy'
@@ -19,10 +17,10 @@ plugins {
     id 'findbugs'
     id 'pmd'
     id 'jacoco'
-//    id 'com.bmuschko.docker-remote-api'
     id 'com.jfrog.bintray' version '1.6'
 }
 
+apply plugin: 'com.bmuschko.docker-remote-api'
 apply from: "$rootDir/gradle/versioning.gradle"
 
 group = 'be.pixxis'
@@ -217,9 +215,4 @@ bintray {
             name = project.version //Bintray logical version name
         }
     }
-}
-
-task printProps << {
-    println System.getenv('BINTRAY_USER')
-    println System.getenv('BINTRAY_KEY')
 }
