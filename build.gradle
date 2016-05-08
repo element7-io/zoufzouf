@@ -17,6 +17,7 @@ plugins {
     id 'findbugs'
     id 'pmd'
     id 'jacoco'
+    id 'net.researchgate.release' version '2.3.4'
     id 'com.jfrog.bintray' version '1.6'
 }
 
