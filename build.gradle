@@ -173,14 +173,14 @@ dependencies {
     compile 'net.jcip:jcip-annotations:1.0'
 
     // Joda Time
-    compile 'joda-time:joda-time:2.9.3'
+    compile 'joda-time:joda-time:2.9.4'
 
     // Java Mail
     compile 'javax.mail:mail:1.4.7'
 
     // MongoDB
     compile 'org.mongodb:mongo-java-driver:3.2.2'
-    compile 'org.mongojack:mongojack:2.6.0'
+    compile 'org.mongojack:mongojack:2.6.1'
 
     compile "com.google.code.findbugs:findbugs:3.0.1"
 
