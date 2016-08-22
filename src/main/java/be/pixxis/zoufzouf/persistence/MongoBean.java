@@ -73,9 +73,6 @@ public enum MongoBean {
       mongo = new MongoClient(addresses, mongoOptions);
     }
 
-    mongo.setReadPreference(readPreference);
-    mongo.setWriteConcern(writeConcern);
-
     //                                LOG.debug("Connecting to MongoDB on localhost (DEV).")
   }
 
